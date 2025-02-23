@@ -2,8 +2,10 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/game.dart';
+import 'package:green_guardian/game/BattleBackground.dart';
 
 import 'entities/HousePlant.dart';
+import 'entities/boss/BossMonster.dart';
 
 
 class PlantGame extends FlameGame {
@@ -16,6 +18,16 @@ class PlantGame extends FlameGame {
 
   @override
   Future<void> onLoad() async {
+
+    //Hintergrund
+    await add(BattleBackground());
+
+    //Boss
+    // Erstelle eine Instanz des BossMonster
+    final boss = BossMonster();
+    // Füge den Boss dem Spiel hinzu
+    add(boss);
+
     // Beispielhafte Initialisierung von Pflanzen.
     // In der Produktion ersetzt du dies durch die dynamische Registrierung der Pflanzen.
     plants.add(HousePlant(
@@ -58,12 +70,12 @@ class PlantGame extends FlameGame {
 
   // Der Boss greift an, wenn eine Pflanze überfällig ist.
   void bossAttack(HousePlant plant) {
-    // Hier kannst du zusätzliche Logik einbauen, um Mehrfachangriffe zu vermeiden.
-    playerHealth -= 10;
-    print('Boss greift an, da ${plant.name} nicht rechtzeitig gegossen wurde. Spieler HP: $playerHealth');
-
-    // Optionale Maßnahme: Verhindere, dass der Boss wiederholt angreift, indem du z. B. einen "angreift"-Status pro Pflanze setzt.
-    // In diesem Beispiel wird der Angriff bei jeder Überprüfung ausgeführt, solange die Pflanze nicht gegossen wurde.
+    // Angriff nur einmal pro versäumtem Gießen
+    if (!plant.attacked) {
+      playerHealth -= 10;
+      plant.attacked = true;
+      print('Boss greift an, da ${plant.name} nicht rechtzeitig gegossen wurde. Spieler HP: $playerHealth');
+    }
   }
 
   @override
