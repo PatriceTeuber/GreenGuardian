@@ -1,0 +1,80 @@
+import 'dart:async';
+import 'dart:ui';
+
+import 'package:flame/game.dart';
+
+import 'entities/HousePlant.dart';
+
+
+class PlantGame extends FlameGame {
+
+  List<HousePlant> plants = [];
+  int playerHealth = 100;
+  int currency = 0;
+
+  Timer? wateringCheckTimer;
+
+  @override
+  Future<void> onLoad() async {
+    // Beispielhafte Initialisierung von Pflanzen.
+    // In der Produktion ersetzt du dies durch die dynamische Registrierung der Pflanzen.
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 10), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Aloe",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 15),
+    ));
+
+    // Starte einen Timer, der jede Sekunde den Gieß-Status aller Pflanzen überprüft.
+    wateringCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      checkWateringStatus();
+    });
+  }
+
+  // Überprüft, ob alle Pflanzen rechtzeitig gegossen wurden.
+  void checkWateringStatus() {
+    for (var plant in plants) {
+      // Falls eine Pflanze nicht innerhalb des Intervalls gegossen wurde, greift der Boss an.
+      if (!plant.isWatered) {
+        bossAttack(plant);
+      }
+    }
+  }
+
+  // Methode, um eine spezifische Pflanze zu gießen.
+  void waterPlant(String plantName) {
+    for (var plant in plants) {
+      if (plant.name == plantName) {
+        plant.water();
+        currency += 10; // Belohnung für erfolgreiches Gießen
+        print('${plant.name} wurde gegossen! Währung: $currency');
+      }
+    }
+  }
+
+  // Der Boss greift an, wenn eine Pflanze überfällig ist.
+  void bossAttack(HousePlant plant) {
+    // Hier kannst du zusätzliche Logik einbauen, um Mehrfachangriffe zu vermeiden.
+    playerHealth -= 10;
+    print('Boss greift an, da ${plant.name} nicht rechtzeitig gegossen wurde. Spieler HP: $playerHealth');
+
+    // Optionale Maßnahme: Verhindere, dass der Boss wiederholt angreift, indem du z. B. einen "angreift"-Status pro Pflanze setzt.
+    // In diesem Beispiel wird der Angriff bei jeder Überprüfung ausgeführt, solange die Pflanze nicht gegossen wurde.
+  }
+
+  @override
+  void update(double dt) {
+    super.update(dt);
+    // Weitere Spiel-Updates können hier integriert werden.
+  }
+
+  @override
+  void render(Canvas canvas) {
+    super.render(canvas);
+    // Rendering der Spielkomponenten (Pflanzen, Lebensanzeigen, Items etc.) erfolgt hier.
+  }
+}
