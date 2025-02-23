@@ -45,7 +45,7 @@ class PlantTile extends StatelessWidget {
                 children: [
                   Text(
                     plant.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   Text(plant.type),
                   Text(
@@ -55,9 +55,10 @@ class PlantTile extends StatelessWidget {
                       color: plant.daysUntilNextWatering > 0 ? Colors.black : Colors.red,
                     ),
                   ),
-                  ElevatedButton(
-                    onPressed: onWater,
-                    child: const Text('Gießen'),
+                  ElevatedButton.icon(
+                    onPressed: () {},
+                    icon: const Icon(Icons.opacity, color: Colors.blueAccent),
+                    label: const Text('Gießen', style: TextStyle(color: Colors.blueAccent),),
                   ),
                 ],
               ),
