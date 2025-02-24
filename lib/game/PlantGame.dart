@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flame/game.dart';
 import 'package:green_guardian/game/BattleBackground.dart';
+import 'package:green_guardian/game/entities/boss/BossOne.dart';
 
 import 'entities/HousePlant.dart';
 import 'entities/boss/BossMonster.dart';
@@ -24,7 +25,7 @@ class PlantGame extends FlameGame {
 
     //Boss
     // Erstelle eine Instanz des BossMonster
-    final boss = BossMonster();
+    final boss = BossOne();
     // Füge den Boss dem Spiel hinzu
     add(boss);
 

@@ -1,55 +1,48 @@
 import 'package:flame/components.dart';
-import 'package:flame/sprite.dart';
-import 'package:green_guardian/game/PlantGame.dart';
 
-class BossMonster extends SpriteAnimationComponent with HasGameRef<PlantGame> {
+import '../../PlantGame.dart';
+
+abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<PlantGame> {
   int health;
   bool isAttacking = false;
   bool isTakingDamage = false;
   bool isDying = false;
+  double xOffset;
+  double yOffset;
+  double scaling;
+  int pixelHeight;
+  int pixelWidth;
 
   late SpriteAnimation idleAnimation;
   late SpriteAnimation attackAnimation;
   late SpriteAnimation damageAnimation;
   late SpriteAnimation deathAnimation;
 
-  BossMonster({this.health = 100})
-      : super(size: Vector2(192, 128)); // Beispielgröße
+  BossMonster({
+    this.health = 100,
+    this.xOffset = 0,
+    this.yOffset = 0,
+    this.scaling = 0,
+    this.pixelWidth = 192,
+    this.pixelHeight = 128,
+  }) : super(size: Vector2(pixelWidth.toDouble(), pixelHeight.toDouble()));
 
   @override
   Future<void> onLoad() async {
-    final idleSprites = await Future.wait([
-      Sprite.load('boss1/idle/idle_1.png'),
-      Sprite.load('boss1/idle/idle_2.png'),
-      Sprite.load('boss1/idle/idle_3.png'),
-      Sprite.load('boss1/idle/idle_4.png'),
-      Sprite.load('boss1/idle/idle_5.png'),
-      Sprite.load('boss1/idle/idle_6.png'),
-    ]);
-    // Lade die Animationen – stelle sicher, dass die Bilder in deinem assets/images-Ordner liegen.
-    idleAnimation = SpriteAnimation.spriteList(idleSprites, stepTime: 0.25);
-
-
-
+    await loadAnimations(); // Kindklasse muss diese Methode implementieren
     // Setze den initialen Zustand auf idle.
     animation = idleAnimation;
-
-    // Positioniere den Boss in der Mitte des Bildschirms.
-    double x = (size.x/2)-100;
-    double y = (size.y/2)+200;
-    position = Vector2(x.roundToDouble(), y.roundToDouble());
-    scale = Vector2.all(2.5);
+    xOffset += (size.x/2);
+    yOffset += (size.x/2);
+    // Optionale Standardpositionierung, kann auch von außen gesetzt werden.
+    position = Vector2(xOffset.roundToDouble(), yOffset.roundToDouble());
+    scale = Vector2.all(scaling);
   }
 
-  // Hilfsmethode zum Wechseln der Animation
-  void _setAnimation(SpriteAnimation newAnimation) {
-    // Setze die Animation neu, falls sie nicht bereits aktiv ist.
-    if (animation != newAnimation) {
-      animation = newAnimation;
-    }
-  }
+  // Diese abstrakte Methode wird von den Kindklassen implementiert, um Animationen zu laden.
+  Future<void> loadAnimations();
 
-  // Idle-Zustand: Boss macht nichts und zeigt die Idle-Animation.
+  // Gemeinsame Methoden, z. B. idle, attack, takeDamage, die:
   void idle() {
     if (!isDying && !isAttacking && !isTakingDamage) {
       _setAnimation(idleAnimation);
@@ -67,7 +60,6 @@ class BossMonster extends SpriteAnimationComponent with HasGameRef<PlantGame> {
       });
     }
   }
-
 
   void takeDamage(int damage) {
     if (isDying) return;
@@ -95,11 +87,17 @@ class BossMonster extends SpriteAnimationComponent with HasGameRef<PlantGame> {
       });
     }
   }
+
+  // Hilfsmethode zum Wechseln der Animation
+  void _setAnimation(SpriteAnimation newAnimation) {
+    if (animation != newAnimation) {
+      animation = newAnimation;
+    }
+  }
 }
 
 extension SpriteAnimationExtension on SpriteAnimation {
   Duration get totalDuration {
-    // Summiere alle stepTime-Werte (als Sekunden) und konvertiere in Duration.
     final totalSeconds = frames.fold<double>(0.0, (prev, frame) => prev + frame.stepTime);
     return Duration(milliseconds: (totalSeconds * 1000).round());
   }
