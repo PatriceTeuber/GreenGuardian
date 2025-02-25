@@ -51,25 +51,25 @@ class DashboardPage extends StatelessWidget {
                     // ListTile für die Monstera
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.local_florist, color: Colors.green),
-                      title: Text("Monstera"),
-                      subtitle: Text("2 Tage bis zum nächsten Gießen"),
+                      leading: const Icon(Icons.local_florist, color: Colors.green),
+                      title: const Text("Monstera"),
+                      subtitle: const Text("2 Tage bis zum nächsten Gießen"),
                       trailing: IconButton(
-                        icon: Icon(Icons.opacity, color: Colors.blueAccent),
+                        icon: const Icon(Icons.opacity, color: Colors.blueAccent),
                         onPressed: () {
                           // Aktion: Pflanze gießen
                         },
                       ),
                     ),
-                    Divider(),
+                    const Divider(),
                     // ListTile für die Sansevieria
                     ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: Icon(Icons.local_florist, color: Colors.green),
-                      title: Text("Sansevieria"),
-                      subtitle: Text("Heute gießen"),
+                      leading: const Icon(Icons.local_florist, color: Colors.green),
+                      title: const Text("Sansevieria"),
+                      subtitle: const Text("Heute gießen"),
                       trailing: IconButton(
-                        icon: Icon(Icons.opacity, color: Colors.blueAccent),
+                        icon: const Icon(Icons.opacity, color: Colors.blueAccent),
                         onPressed: () {
                           // Aktion: Pflanze gießen
                         },
