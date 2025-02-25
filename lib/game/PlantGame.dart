@@ -5,8 +5,6 @@ import 'package:green_guardian/game/BattleBackground.dart';
 import 'package:green_guardian/game/entities/boss/BossOne.dart';
 
 import 'entities/HousePlant.dart';
-import 'entities/boss/BossMonster.dart';
-
 
 class PlantGame extends FlameGame {
 
