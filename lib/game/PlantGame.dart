@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flame/game.dart';
 import 'package:green_guardian/game/BattleBackground.dart';
@@ -34,16 +33,16 @@ class PlantGame extends FlameGame {
     plants.add(HousePlant(
       name: "Ficus",
       lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 10), // Simuliert 1 Woche als 10 Sekunden
+      wateringInterval: const Duration(seconds: 10), // Simuliert 1 Woche als 10 Sekunden
     ));
     plants.add(HousePlant(
       name: "Aloe",
       lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 15),
+      wateringInterval: const Duration(seconds: 15),
     ));
 
     // Starte einen Timer, der jede Sekunde den Gieß-Status aller Pflanzen überprüft.
-    wateringCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    wateringCheckTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
       checkWateringStatus();
     });
   }
@@ -79,15 +78,5 @@ class PlantGame extends FlameGame {
     }
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-    // Weitere Spiel-Updates können hier integriert werden.
-  }
 
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    // Rendering der Spielkomponenten (Pflanzen, Lebensanzeigen, Items etc.) erfolgt hier.
-  }
 }
