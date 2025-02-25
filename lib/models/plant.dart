@@ -1,5 +1,6 @@
 class Plant {
-  final String id;
+  final int id;
+  final int playerId;
   final String name;
   final String type;
   final String imagePath; // URL zum Bild
@@ -8,6 +9,7 @@ class Plant {
 
   Plant({
     required this.id,
+    required this.playerId,
     required this.name,
     required this.type,
     required this.imagePath,
