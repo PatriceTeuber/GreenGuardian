@@ -7,10 +7,10 @@ class PlantOverviewPage extends StatefulWidget {
   const PlantOverviewPage({super.key});
 
   @override
-  _PlantOverviewPageState createState() => _PlantOverviewPageState();
+  PlantOverviewPageState createState() => PlantOverviewPageState();
 }
 
-class _PlantOverviewPageState extends State<PlantOverviewPage> {
+class PlantOverviewPageState extends State<PlantOverviewPage> {
   List<Plant> _plants = [];
 
   @override
@@ -19,13 +19,14 @@ class _PlantOverviewPageState extends State<PlantOverviewPage> {
     _loadPlants();
   }
 
-
   void _loadPlants() {
     // Beispiel: Monstera wurde vor 1 Tag gegossen, Sansevieria vor 5 Tagen.
     setState(() {
+      //TODO: Später Request vom AWS API Gateway einbauen;
       _plants = [
         Plant(
-          id: '1',
+          id: 1,
+          playerId: 2,
           name: 'Monstera',
           type: 'Zimmerpflanze',
           imagePath: 'https://de-de.bakker.com/cdn/shop/files/VIS_018129_1_BK_1705411387376.jpg?v=1705411425',
@@ -33,7 +34,8 @@ class _PlantOverviewPageState extends State<PlantOverviewPage> {
           lastWatered: DateTime.now().subtract(const Duration(days: 1)),
         ),
         Plant(
-          id: '2',
+          id: 2,
+          playerId: 2,
           name: 'Sansevieria',
           type: 'Luftreiniger',
           imagePath: 'https://www.ikea.com/de/de/images/products/sansevieria-trifasciata-pflanze-bogenhanf__0908898_pe676659_s5.jpg',
