@@ -125,6 +125,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
       Future.delayed(deathAnimation.totalDuration, () {
         print('$bossName wurde besiegt!');
         // Übergebe hier den XP-Wert an dein Spiel (z.B. als letzte erhaltene XP)
+        gameRef.playerXP += xpAmount;
         gameRef.lastXPEarned = xpAmount; // Beispielwert, hier kannst du deine Logik einbauen
         // Entferne den Boss
         removeFromParent();

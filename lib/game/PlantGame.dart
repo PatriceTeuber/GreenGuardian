@@ -23,6 +23,7 @@ class PlantGame extends FlameGame {
   double playerHealth = 100;
   int currency = 0;
   double lastXPEarned = 0;
+  double playerXP = 0;
   late BossMonster currentBoss;
   late BossMonster bossBlueprint;
   int bossCounter = 0;
