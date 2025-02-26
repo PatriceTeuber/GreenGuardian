@@ -1,11 +1,11 @@
 import 'package:flame/components.dart';
 import 'package:green_guardian/game/entities/boss/BossMonster.dart';
 
-class BossOne extends BossMonster {
-  BossOne({
+class IceGolem extends BossMonster {
+  IceGolem({
     double attackDamage = 10,
     required int level,
-    required String bossName,
+    String bossName = "Eisgolem",
     double xpAmount = 10,
     double health = 100,
     double xOffset = -100,
@@ -13,7 +13,12 @@ class BossOne extends BossMonster {
     double scaling = 2.5,
     int pixelWidth = 192,
     int pixelHeight = 128,
+
   }) : super(
+    labelXOffset: 135,
+    labelYOffset: 280,
+    attackSoundSrc: "golem_attack.mp3",
+    deathSoundSrc: "golem_death.mp3",
     attackDamage: attackDamage + level * 1.25,
     health: health + 25 * level,
     xOffset: xOffset,

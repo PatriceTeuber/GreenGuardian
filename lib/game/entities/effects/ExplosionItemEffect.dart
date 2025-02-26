@@ -1,14 +1,22 @@
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:green_guardian/game/PlantGame.dart';
+import 'package:green_guardian/game/entities/boss/BossMonster.dart';
 
 class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
   double _elapsedTime = 0.0;
+  bool _soundPlayed = false;
+  bool _damageApplied = false;
+  final BossMonster boss;
+  final double itemDamage;
 
-  ExplosionItemEffect({Vector2? position})
-      : super(
-    // Wenn keine Position übergeben wurde, wird später in onLoad unten links gesetzt.
+  ExplosionItemEffect({
+    Vector2? position,
+    required this.boss,
+    required this.itemDamage,
+  }) : super(
     position: position ?? Vector2.zero(),
-    size: Vector2.all(150), // Basisgröße (wird später skaliert)
+    size: Vector2.all(150),
   );
 
   @override
@@ -28,31 +36,50 @@ class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
       Sprite.load('other/explosion/explosion12.png'),
       Sprite.load('other/explosion/explosion13.png'),
     ]);
+    // Animation ohne Loop
     animation = SpriteAnimation.spriteList(sprites, stepTime: 0.15, loop: false);
 
-    // Setze die Position unten links, falls nicht schon anders übergeben.
+    // Setze die Position unten links, falls nicht anders übergeben
     if (position == Vector2.zero()) {
-      position = Vector2(0, gameRef.size.y - size.y * 3 - 150); // Beachte: size.y * Skalierungsfaktor
+      position = _getVectorBasedOnEnemyType();
     }
-
-    // Skaliere den Effekt größer, z. B. 2x
+    // Skaliere den Effekt (z. B. 3x größer)
     scale = Vector2.all(3);
+  }
+
+  Vector2 _getVectorBasedOnEnemyType() {
+    if (boss.bossName.contains("Feuerdämon")) {
+      return Vector2(boss.position.x - 10, boss.position.y - 20);
+    } else if (boss.bossName.contains("Eisgolem")) {
+      return Vector2(boss.position.x - 50, boss.position.y - 80);
+    } else {
+      return Vector2(boss.position.x - 120, boss.position.y-100);
+    }
   }
 
   @override
   void update(double dt) {
     super.update(dt);
     _elapsedTime += dt;
-    // Berechne die Gesamtdauer der Animation
-    final totalDuration = Duration(
-      milliseconds: (animation!.frames.fold<double>(
-          0.0, (prev, frame) => prev + frame.stepTime) *
-          1000)
-          .round(),
-    );
-    if (_elapsedTime >= totalDuration.inMilliseconds / 1000.0) {
+
+    // Berechne die Gesamtdauer der Animation (in Sekunden)
+    final totalSeconds = animation!.frames.fold<double>(0.0, (prev, frame) => prev + frame.stepTime);
+
+    // Trigger Explosion-Sound 200ms vor Ende der Animation:
+    if (!_soundPlayed && _elapsedTime >= totalSeconds - 1) {
+      FlameAudio.play("explosion.mp3", volume: 0.5);
+      _soundPlayed = true;
+    }
+
+    // Wende Schaden ca. 100ms nach dem Sound (also kurz vor Ende) an:
+    if (!_damageApplied && _elapsedTime >= totalSeconds - 0.5) {
+      boss.takeDamage(itemDamage);
+      _damageApplied = true;
+    }
+
+    // Entferne den Effekt, wenn die Animation vollständig abgespielt wurde.
+    if (_elapsedTime >= totalSeconds) {
       removeFromParent();
     }
   }
 }
-
