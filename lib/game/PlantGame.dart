@@ -4,7 +4,6 @@ import 'dart:ui';
 import 'package:flame/game.dart';
 import 'package:green_guardian/game/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
-import 'package:green_guardian/game/entities/HealthBar.dart';
 import 'package:green_guardian/game/entities/boss/BossOne.dart';
 
 import 'Item.dart';
