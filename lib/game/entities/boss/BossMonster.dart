@@ -2,8 +2,12 @@ import 'package:flame/components.dart';
 
 import '../../PlantGame.dart';
 
+//TODO: Level für XP Schaden etc.
+//TODO: Weitere Bosse
+//TODO: Gewinnscreen LoseScreen
+//TODO: ETC
 abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<PlantGame> {
-  int health;
+  double health;
   bool isAttacking = false;
   bool isTakingDamage = false;
   bool isDying = false;
@@ -12,6 +16,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   double scaling;
   int pixelHeight;
   int pixelWidth;
+  String bossName;
 
   late SpriteAnimation idleAnimation;
   late SpriteAnimation attackAnimation;
@@ -19,6 +24,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   late SpriteAnimation deathAnimation;
 
   BossMonster({
+    required this.bossName,
     this.health = 100,
     this.xOffset = 0,
     this.yOffset = 0,
@@ -61,13 +67,14 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
     }
   }
 
-  void takeDamage(int damage) {
+  void takeDamage(double damage) {
     if (isDying) return;
     health -= damage;
     print('Boss nimmt $damage Schaden. Verbleibende HP: $health');
     if (health > 0) {
       isTakingDamage = true;
       _setAnimation(damageAnimation);
+      // Animation einmal abspielen, dann in den Idle-Zustand wechseln:
       Future.delayed(damageAnimation.totalDuration, () {
         isTakingDamage = false;
         idle();

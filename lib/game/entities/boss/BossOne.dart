@@ -3,7 +3,8 @@ import 'package:green_guardian/game/entities/boss/BossMonster.dart';
 
 class BossOne extends BossMonster {
   BossOne({
-    int health = 100,
+    required String bossName,
+    double health = 100,
     double xOffset = -100,
     double yOffset = 200,
     double scaling = 2.5,
@@ -16,6 +17,7 @@ class BossOne extends BossMonster {
     scaling: scaling,
     pixelWidth: pixelWidth,
     pixelHeight: pixelHeight,
+    bossName: bossName,
   );
 
   @override
@@ -73,8 +75,8 @@ class BossOne extends BossMonster {
     ]);
 
     idleAnimation = SpriteAnimation.spriteList(idleSprites, stepTime: 0.175);
-    attackAnimation = SpriteAnimation.spriteList(attackSprites, stepTime: 0.1);
-    deathAnimation = SpriteAnimation.spriteList(deathSprites, stepTime: 0.2);
-    damageAnimation = SpriteAnimation.spriteList(takeHitSprites, stepTime: 0.125);
+    attackAnimation = SpriteAnimation.spriteList(attackSprites, stepTime: 0.1, loop: false);
+    deathAnimation = SpriteAnimation.spriteList(deathSprites, stepTime: 0.125, loop: false);
+    damageAnimation = SpriteAnimation.spriteList(takeHitSprites, stepTime: 0.125, loop: false);
   }
 }
