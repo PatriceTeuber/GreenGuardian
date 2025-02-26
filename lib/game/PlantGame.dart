@@ -3,13 +3,13 @@ import 'dart:ui';
 
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:green_guardian/game/BattleBackground.dart';
+import 'package:green_guardian/game/entities/overlays/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
 import 'package:green_guardian/game/entities/boss/BossOne.dart';
 import 'package:green_guardian/game/entities/effects/ExplosionItemEffect.dart';
 import 'package:green_guardian/game/entities/effects/HealEffect.dart';
 
-import 'Item.dart';
+import 'entities/Item.dart';
 import 'entities/HousePlant.dart';
 import 'entities/boss/BossMonster.dart';
 
@@ -21,6 +21,8 @@ class PlantGame extends FlameGame {
   int currency = 0;
   double lastXPEarned = 0;
   late BossMonster currentBoss;
+  late BossMonster bossBlueprint;
+  int bossCounter = 0;
 
   Timer? wateringCheckTimer;
 
@@ -66,6 +68,36 @@ class PlantGame extends FlameGame {
       name: "Ficus",
       lastWatered: DateTime.now(),
       wateringInterval: Duration(seconds: 10), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 2), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 20), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 15), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 5), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 12), // Simuliert 1 Woche als 10 Sekunden
+    ));
+    plants.add(HousePlant(
+      name: "Ficus",
+      lastWatered: DateTime.now(),
+      wateringInterval: Duration(seconds: 30), // Simuliert 1 Woche als 10 Sekunden
     ));
 
     // Starte einen Timer, der jede Sekunde den Gieß-Status aller Pflanzen überprüft.
@@ -178,10 +210,24 @@ class PlantGame extends FlameGame {
   void nextBoss() {
     //TODO: Boss Typen hinzufügen dann random Boss. Schauen wie mit Level
     currentBoss = BossOne(bossName: "Testatze", level: 30);
+    bossBlueprint = currentBoss;
     add(currentBoss);
 
-    // Aktualisiere die Boss-HealthBar, falls du sie neu positionieren oder resetten möchtest.
-    // Hier ein Beispiel:
+    _resetBossHealthBar();
+  }
+
+  void resetCurrentBoss() {
+    // Entferne den alten Boss (falls nötig) und erstelle einen neuen
+    // Beispiel: Setze currentBoss neu und aktualisiere die HealthBar
+    currentBoss.removeFromParent();
+    currentBoss = bossBlueprint;
+    add(currentBoss);
+    _resetBossHealthBar();
+    bossCounter = 0;
+  }
+
+
+  void _resetBossHealthBar() {
     bossHealthBar.currentHealth = currentBoss.health.toDouble();
     bossHealthBar.maxHealth = currentBoss.health.toDouble();
     bossHealthBar.label = currentBoss.bossName;
@@ -190,6 +236,10 @@ class PlantGame extends FlameGame {
   @override
   void update(double dt) {
     super.update(dt);
+    if (playerHealth <= 0 && !overlays.isActive('LoseScreen')) {
+      // Spieler verloren – zeige LoseScreen
+      overlays.add('LoseScreen');
+    }
     if (playerHealth.toDouble() < 0) {
       playerHealthBar.currentHealth = 0;
     } else {

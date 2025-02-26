@@ -104,6 +104,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
         removeFromParent();
         // Zeige das WinScreen-Overlay an
         gameRef.overlays.add('WinScreen');
+        game.bossCounter++;
       });
     }
   }

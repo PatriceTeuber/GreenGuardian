@@ -2,8 +2,9 @@ import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:green_guardian/game/PlantGame.dart';
 
-import '../game/InventoryOverlay.dart';
-import '../game/WinScreenOverlay.dart';
+import '../game/entities/overlays/InventoryOverlay.dart';
+import '../game/entities/overlays/LoseScreenOverlay.dart';
+import '../game/entities/overlays/WinScreenOverlay.dart';
 
 class BattlePage extends StatelessWidget {
   const BattlePage({super.key});
@@ -25,6 +26,9 @@ class BattlePage extends StatelessWidget {
                   game: game,
                   xpEarned: game.lastXPEarned, // Stelle sicher, dass lastXPEarned deklariert ist.
                 );
+              },
+              'LoseScreen': (BuildContext context, PlantGame game) {
+                return LoseScreenOverlay(game: game);
               },
             },
           ),
