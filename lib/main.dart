@@ -23,6 +23,7 @@ class MyApp extends StatelessWidget {
         // Hier kannst du auch globale TextStyles, ButtonThemes etc. definieren.
       ),
       home: const HomeScreen(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
