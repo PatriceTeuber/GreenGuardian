@@ -122,6 +122,24 @@ class PlantGame extends FlameGame {
         effect: 'Boss-Schaden',
         value: 1000,
       ),
+      Item(
+        name: 'Bombe',
+        assetPath: 'assets/images/items/defaultBomb.png',
+        effect: 'Boss-Schaden',
+        value: 1000,
+      ),
+      Item(
+        name: 'Bombe',
+        assetPath: 'assets/images/items/defaultBomb.png',
+        effect: 'Boss-Schaden',
+        value: 1000,
+      ),
+      Item(
+        name: 'Bombe',
+        assetPath: 'assets/images/items/defaultBomb.png',
+        effect: 'Boss-Schaden',
+        value: 1000,
+      ),
     ]);
 
   }
