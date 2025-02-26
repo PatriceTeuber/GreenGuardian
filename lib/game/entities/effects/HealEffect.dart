@@ -14,23 +14,22 @@ class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
   @override
   Future<void> onLoad() async {
     final sprites = await Future.wait([
-      Sprite.load('other/heal/Heal1.png'),
-      Sprite.load('other/heal/Heal2.png'),
-      Sprite.load('other/heal/Heal3.png'),
-      Sprite.load('other/heal/Heal4.png'),
-      Sprite.load('other/heal/Heal5.png'),
-      Sprite.load('other/heal/Heal6.png'),
-      Sprite.load('other/heal/Heal7.png'),
-      Sprite.load('other/heal/Heal8.png'),
-      Sprite.load('other/heal/Heal9.png'),
-      Sprite.load('other/heal/Heal10.png'),
-      Sprite.load('other/heal/Heal11.png'),
+      Sprite.load('other/heal/heal1.png'),
+      Sprite.load('other/heal/heal2.png'),
+      Sprite.load('other/heal/heal3.png'),
+      Sprite.load('other/heal/heal4.png'),
+      Sprite.load('other/heal/heal5.png'),
+      Sprite.load('other/heal/heal6.png'),
+      Sprite.load('other/heal/heal7.png'),
+      Sprite.load('other/heal/heal8.png'),
+      Sprite.load('other/heal/heal9.png'),
+      Sprite.load('other/heal/heal10.png'),
     ]);
     animation = SpriteAnimation.spriteList(sprites, stepTime: 0.15, loop: false);
 
     // Setze die Position unten links, falls nicht schon anders übergeben.
     if (position == Vector2.zero()) {
-      position = Vector2(0, gameRef.size.y - size.y * 3 - 150); // Beachte: size.y * Skalierungsfaktor
+      position = Vector2(0, gameRef.size.y - size.y * 3 - 50); // Beachte: size.y * Skalierungsfaktor
     }
 
     // Skaliere den Effekt größer, z. B. 2x
