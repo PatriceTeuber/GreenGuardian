@@ -41,15 +41,16 @@ class PlantGame extends FlameGame {
     await add(BattleBackground());
 
     //Boss
-    currentBoss = IceGolem(level: 1);
+    currentBoss = FireDemon(level: 1);
     bossBlueprint = currentBoss;
     add(currentBoss);
 
+    await currentBoss.onLoaded;
     //Lebensanzeigen:
     bossHealthBar = HealthBar(
       currentHealth: currentBoss.health.toDouble(),
       maxHealth: currentBoss.health,
-      position: Vector2(currentBoss.position.x + currentBoss.labelXOffset, currentBoss.position.y + currentBoss.labelYOffset),
+      position: Vector2(currentBoss.labelXOffset, currentBoss.labelYOffset),
       size: Vector2(200, 30),
       label: currentBoss.bossName
     );
@@ -90,13 +91,13 @@ class PlantGame extends FlameGame {
         name: 'Beere',
         assetPath: 'assets/images/items/Berry.png',
         effect: 'Heilt',
-        value: 20,
+        value: 200,
       ),
       Item(
         name: 'Bombe',
         assetPath: 'assets/images/items/defaultBomb.png',
         effect: 'Boss-Schaden',
-        value: 50,
+        value: 500,
       ),
       Item(
         name: 'Bombe',
@@ -108,7 +109,7 @@ class PlantGame extends FlameGame {
         name: 'Bombe',
         assetPath: 'assets/images/items/defaultBomb.png',
         effect: 'Boss-Schaden',
-        value: 40,
+        value: 400,
       ),
       Item(
         name: 'Bombe',

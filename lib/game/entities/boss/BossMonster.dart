@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 
@@ -15,25 +17,30 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   bool isAttacking = false;
   bool isTakingDamage = false;
   bool isDying = false;
-  double xOffset;
-  double yOffset;
-  double scaling;
+  double xOffsetFactor;
+  double yOffsetFactor;
+  double scalingFactor;
   int pixelHeight;
   int pixelWidth;
   String bossName;
   String deathSoundSrc;
   String attackSoundSrc;
-  int labelXOffset;
-  int labelYOffset;
+  double labelXOffset = 0;
+  double labelYOffset = 0;
+  double labelXOffsetFactor;
+  double labelYOffsetFactor;
 
   late SpriteAnimation idleAnimation;
   late SpriteAnimation attackAnimation;
   late SpriteAnimation damageAnimation;
   late SpriteAnimation deathAnimation;
 
+  final Completer<void> _loadedCompleter = Completer<void>();
+  Future<void> get onLoaded => _loadedCompleter.future;
+
   BossMonster({
-    required this.labelXOffset,
-    required this.labelYOffset,
+    required this.labelXOffsetFactor,
+    required this.labelYOffsetFactor,
     required this.attackSoundSrc,
     required this.deathSoundSrc,
     required this.attackDamage,
@@ -41,23 +48,33 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
     required this.level,
     required this.bossName,
     this.health = 100,
-    this.xOffset = 0,
-    this.yOffset = 0,
-    this.scaling = 0,
+    this.xOffsetFactor = 0,
+    this.yOffsetFactor = 0,
+    this.scalingFactor = 0,
     this.pixelWidth = 192,
     this.pixelHeight = 128,
   }) : super(size: Vector2(pixelWidth.toDouble(), pixelHeight.toDouble()));
 
   @override
   Future<void> onLoad() async {
-    await loadAnimations(); // Kindklasse muss diese Methode implementieren
-    // Setze den initialen Zustand auf idle.
+    await loadAnimations();
     animation = idleAnimation;
-    xOffset += (size.x/2);
-    yOffset += (size.x/2);
+
+    final screenWidth = gameRef.size.x;
+    final screenHeight = gameRef.size.y;
+
+    final computedXOffset = screenWidth * xOffsetFactor;
+    final computedYOffset = screenHeight * yOffsetFactor;
+    final computedScaling = scalingFactor * (screenHeight / screenWidth)*1.25;
+
     // Optionale Standardpositionierung, kann auch von außen gesetzt werden.
-    position = Vector2(xOffset.roundToDouble(), yOffset.roundToDouble());
-    scale = Vector2.all(scaling);
+    position = Vector2(computedXOffset, computedYOffset);
+    scale = Vector2.all(computedScaling);
+
+    labelXOffset = screenWidth * labelXOffsetFactor;
+    labelYOffset = screenHeight * labelYOffsetFactor;
+
+    _loadedCompleter.complete();
   }
 
   // Diese abstrakte Methode wird von den Kindklassen implementiert, um Animationen zu laden.
