@@ -3,9 +3,11 @@ import 'dart:ui';
 
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:green_guardian/game/entities/boss/Crow.dart';
+import 'package:green_guardian/game/entities/boss/FireDemon.dart';
 import 'package:green_guardian/game/entities/overlays/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
-import 'package:green_guardian/game/entities/boss/BossOne.dart';
+import 'package:green_guardian/game/entities/boss/IceGolem.dart';
 import 'package:green_guardian/game/entities/effects/ExplosionItemEffect.dart';
 import 'package:green_guardian/game/entities/effects/HealEffect.dart';
 
@@ -38,14 +40,15 @@ class PlantGame extends FlameGame {
     await add(BattleBackground());
 
     //Boss
-    currentBoss = BossOne(bossName: "Eisgolem", level: 2);
+    currentBoss = IceGolem(level: 1);
+    bossBlueprint = currentBoss;
     add(currentBoss);
 
     //Lebensanzeigen:
     bossHealthBar = HealthBar(
       currentHealth: currentBoss.health.toDouble(),
       maxHealth: currentBoss.health,
-      position: Vector2(currentBoss.position.x - currentBoss.xOffset + 40, currentBoss.position.y + currentBoss.yOffset + 100),
+      position: Vector2(currentBoss.position.x + currentBoss.labelXOffset, currentBoss.position.y + currentBoss.labelYOffset),
       size: Vector2(200, 30),
       label: currentBoss.bossName
     );
@@ -68,31 +71,6 @@ class PlantGame extends FlameGame {
       name: "Ficus",
       lastWatered: DateTime.now(),
       wateringInterval: Duration(seconds: 10), // Simuliert 1 Woche als 10 Sekunden
-    ));
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 2), // Simuliert 1 Woche als 10 Sekunden
-    ));
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 20), // Simuliert 1 Woche als 10 Sekunden
-    ));
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 15), // Simuliert 1 Woche als 10 Sekunden
-    ));
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 5), // Simuliert 1 Woche als 10 Sekunden
-    ));
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 12), // Simuliert 1 Woche als 10 Sekunden
     ));
     plants.add(HousePlant(
       name: "Ficus",
@@ -171,7 +149,6 @@ class PlantGame extends FlameGame {
   void bossAttack(HousePlant plant) {
     // Angriff nur einmal pro versäumtem Gießen
     if (!plant.attacked) {
-      FlameAudio.play("boss_attack.mp3", volume: 100);
       playerHealth -= currentBoss.attackDamage;
       plant.attacked = true;
       currentBoss.attack();
@@ -188,7 +165,6 @@ class PlantGame extends FlameGame {
     if (item.effect == 'Heilt') {
       playerHealth += item.value;
       if (playerHealth > 100) playerHealth = 100;
-
       FlameAudio.play("heal.mp3");
       final effect = HealEffect();
       add(effect);
@@ -196,20 +172,16 @@ class PlantGame extends FlameGame {
       print('Spieler wird geheilt: $playerHealth/100');
     } else if (item.effect == 'Boss-Schaden') {
 
-      final effect = ExplosionItemEffect();
+      final effect = ExplosionItemEffect(boss: currentBoss, itemDamage: item.value);
       add(effect);
-      await Future.delayed(currentBoss.damageAnimation.totalDuration);
-      FlameAudio.play("explosion.mp3");
-      currentBoss.takeDamage(item.value);
 
-      print('Boss erhält ${item.value} Schaden!');
     }
     inventory.remove(item);
   }
 
   void nextBoss() {
     //TODO: Boss Typen hinzufügen dann random Boss. Schauen wie mit Level
-    currentBoss = BossOne(bossName: "Testatze", level: 30);
+    currentBoss = Crow(level: 5, bossName: "Crow");
     bossBlueprint = currentBoss;
     add(currentBoss);
 
@@ -261,7 +233,13 @@ class PlantGame extends FlameGame {
 
   Future<void> loadSounds() async {
     await FlameAudio.audioCache.load('heal.mp3');
-    await FlameAudio.audioCache.load('boss_attack.mp3');
+    await FlameAudio.audioCache.load('golem_attack.mp3');
     await FlameAudio.audioCache.load('explosion.mp3');
+    await FlameAudio.audioCache.load('golem_death.mp3');
+    await FlameAudio.audioCache.load('crow_death.wav');
+    await FlameAudio.audioCache.load('crow_attack.mp3');
+    await FlameAudio.audioCache.load('player_lose.mp3');
+    await FlameAudio.audioCache.load('fire_attack.mp3');
+    await FlameAudio.audioCache.load('fire_death.mp3');
   }
 }

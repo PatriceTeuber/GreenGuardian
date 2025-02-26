@@ -66,6 +66,14 @@ flutter:
     - assets/images/boss1/attack/
     - assets/images/boss1/death/
     - assets/images/boss1/take_hit/
+    - assets/images/boss2/idle/
+    - assets/images/boss2/attack/
+    - assets/images/boss2/death/
+    - assets/images/boss2/take_hit/
+    - assets/images/boss3/idle/
+    - assets/images/boss3/attack/
+    - assets/images/boss3/death/
+    - assets/images/boss3/take_hit/
     - assets/images/items/
     - assets/images/other/heal/
     - assets/images/other/explosion/

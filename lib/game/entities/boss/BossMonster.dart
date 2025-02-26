@@ -21,6 +21,10 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   int pixelHeight;
   int pixelWidth;
   String bossName;
+  String deathSoundSrc;
+  String attackSoundSrc;
+  int labelXOffset;
+  int labelYOffset;
 
   late SpriteAnimation idleAnimation;
   late SpriteAnimation attackAnimation;
@@ -28,6 +32,10 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   late SpriteAnimation deathAnimation;
 
   BossMonster({
+    required this.labelXOffset,
+    required this.labelYOffset,
+    required this.attackSoundSrc,
+    required this.deathSoundSrc,
     required this.attackDamage,
     required this.xpAmount,
     required this.level,
@@ -64,6 +72,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
 
   void attack() {
     if (!isDying && !isAttacking && !isTakingDamage) {
+      FlameAudio.play(attackSoundSrc, volume: 0.5);
       isAttacking = true;
       _setAnimation(attackAnimation);
       print('Boss greift an!');
@@ -94,10 +103,10 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   void die() {
     if (!isDying) {
       isDying = true;
-      FlameAudio.play("golem_death.mp3", volume: 100);
+      FlameAudio.play(deathSoundSrc, volume: 0.5);
       _setAnimation(deathAnimation);
       Future.delayed(deathAnimation.totalDuration, () {
-        print('Boss ist besiegt!');
+        print('$bossName wurde besiegt!');
         // Übergebe hier den XP-Wert an dein Spiel (z.B. als letzte erhaltene XP)
         gameRef.lastXPEarned = xpAmount; // Beispielwert, hier kannst du deine Logik einbauen
         // Entferne den Boss
