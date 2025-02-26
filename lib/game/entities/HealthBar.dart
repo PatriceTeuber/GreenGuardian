@@ -7,7 +7,7 @@ class HealthBar extends PositionComponent {
   double maxHealth;
   Color fillColor;
   Color borderColor;
-  final String label; // Beispiel: "Leben"
+  String label;
 
   HealthBar({
     required this.currentHealth,

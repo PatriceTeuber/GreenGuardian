@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 
 import '../../PlantGame.dart';
 
@@ -7,6 +8,9 @@ import '../../PlantGame.dart';
 //TODO: Gewinnscreen LoseScreen
 //TODO: ETC
 abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<PlantGame> {
+  int level;
+  double attackDamage;
+  double xpAmount;
   double health;
   bool isAttacking = false;
   bool isTakingDamage = false;
@@ -24,6 +28,9 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   late SpriteAnimation deathAnimation;
 
   BossMonster({
+    required this.attackDamage,
+    required this.xpAmount,
+    required this.level,
     required this.bossName,
     this.health = 100,
     this.xOffset = 0,
@@ -87,13 +94,20 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   void die() {
     if (!isDying) {
       isDying = true;
+      FlameAudio.play("golem_death.mp3", volume: 100);
       _setAnimation(deathAnimation);
       Future.delayed(deathAnimation.totalDuration, () {
         print('Boss ist besiegt!');
+        // Übergebe hier den XP-Wert an dein Spiel (z.B. als letzte erhaltene XP)
+        gameRef.lastXPEarned = xpAmount; // Beispielwert, hier kannst du deine Logik einbauen
+        // Entferne den Boss
         removeFromParent();
+        // Zeige das WinScreen-Overlay an
+        gameRef.overlays.add('WinScreen');
       });
     }
   }
+
 
   // Hilfsmethode zum Wechseln der Animation
   void _setAnimation(SpriteAnimation newAnimation) {

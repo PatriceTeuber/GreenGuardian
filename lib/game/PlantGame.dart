@@ -2,9 +2,12 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:flame/game.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:green_guardian/game/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
 import 'package:green_guardian/game/entities/boss/BossOne.dart';
+import 'package:green_guardian/game/entities/effects/ExplosionItemEffect.dart';
+import 'package:green_guardian/game/entities/effects/HealEffect.dart';
 
 import 'Item.dart';
 import 'entities/HousePlant.dart';
@@ -16,6 +19,7 @@ class PlantGame extends FlameGame {
   List<HousePlant> plants = [];
   double playerHealth = 100;
   int currency = 0;
+  double lastXPEarned = 0;
   late BossMonster currentBoss;
 
   Timer? wateringCheckTimer;
@@ -32,27 +36,26 @@ class PlantGame extends FlameGame {
     await add(BattleBackground());
 
     //Boss
-    currentBoss = BossOne(bossName: "Eisgolem");
+    currentBoss = BossOne(bossName: "Eisgolem", level: 2);
     add(currentBoss);
 
     //Lebensanzeigen:
-    // Boss-HealthBar oberhalb des Boss positionieren:
     bossHealthBar = HealthBar(
       currentHealth: currentBoss.health.toDouble(),
-      maxHealth: 100,
+      maxHealth: currentBoss.health,
       position: Vector2(currentBoss.position.x - currentBoss.xOffset + 40, currentBoss.position.y + currentBoss.yOffset + 100),
       size: Vector2(200, 30),
       label: currentBoss.bossName
     );
     add(bossHealthBar);
 
-    // Spieler-HealthBar z. B. am oberen Rand des Bildschirms
+    // Spieler-HealthBar
     playerHealthBar = HealthBar(
       currentHealth: playerHealth.toDouble(),
       maxHealth: 100,
       position: Vector2(20, 60),
       size: Vector2(300, 30),
-      fillColor: const Color(0xFFFFFF00), // Grün für Spieler
+      fillColor: const Color(0xFFFFFF00),
       label: "HP Spieler"
     );
     add(playerHealthBar);
@@ -88,13 +91,25 @@ class PlantGame extends FlameGame {
         name: 'Bombe',
         assetPath: 'assets/images/items/defaultBomb.png',
         effect: 'Boss-Schaden',
-        value: 40,
+        value: 200,
       ),
       Item(
         name: 'Bombe',
         assetPath: 'assets/images/items/defaultBomb.png',
         effect: 'Boss-Schaden',
         value: 40,
+      ),
+      Item(
+        name: 'Bombe',
+        assetPath: 'assets/images/items/defaultBomb.png',
+        effect: 'Boss-Schaden',
+        value: 150,
+      ),
+      Item(
+        name: 'Bombe',
+        assetPath: 'assets/images/items/defaultBomb.png',
+        effect: 'Boss-Schaden',
+        value: 1000,
       ),
     ]);
   }
@@ -124,7 +139,8 @@ class PlantGame extends FlameGame {
   void bossAttack(HousePlant plant) {
     // Angriff nur einmal pro versäumtem Gießen
     if (!plant.attacked) {
-      playerHealth -= 10;
+      FlameAudio.play("boss_attack.mp3", volume: 100);
+      playerHealth -= currentBoss.attackDamage;
       plant.attacked = true;
       currentBoss.attack();
       print('Boss greift an, da ${plant.name} nicht rechtzeitig gegossen wurde. Spieler HP: $playerHealth');
@@ -136,16 +152,39 @@ class PlantGame extends FlameGame {
   }
 
 
-  void useItem(Item item) {
+  Future<void> useItem(Item item) async {
     if (item.effect == 'Heilt') {
       playerHealth += item.value;
       if (playerHealth > 100) playerHealth = 100;
+
+      FlameAudio.play("heal.mp3");
+      final effect = HealEffect();
+      add(effect);
+
       print('Spieler wird geheilt: $playerHealth/100');
     } else if (item.effect == 'Boss-Schaden') {
+
+      final effect = ExplosionItemEffect();
+      add(effect);
+      await Future.delayed(currentBoss.damageAnimation.totalDuration);
+      FlameAudio.play("explosion.mp3");
       currentBoss.takeDamage(item.value);
+
       print('Boss erhält ${item.value} Schaden!');
     }
     inventory.remove(item);
+  }
+
+  void nextBoss() {
+    //TODO: Boss Typen hinzufügen dann random Boss. Schauen wie mit Level
+    currentBoss = BossOne(bossName: "Testatze", level: 30);
+    add(currentBoss);
+
+    // Aktualisiere die Boss-HealthBar, falls du sie neu positionieren oder resetten möchtest.
+    // Hier ein Beispiel:
+    bossHealthBar.currentHealth = currentBoss.health.toDouble();
+    bossHealthBar.maxHealth = currentBoss.health.toDouble();
+    bossHealthBar.label = currentBoss.bossName;
   }
 
   @override
@@ -168,5 +207,11 @@ class PlantGame extends FlameGame {
   void render(Canvas canvas) {
     super.render(canvas);
     // Rendering der Spielkomponenten (Pflanzen, Lebensanzeigen, Items etc.) erfolgt hier.
+  }
+
+  Future<void> loadSounds() async {
+    await FlameAudio.audioCache.load('heal.mp3');
+    await FlameAudio.audioCache.load('boss_attack.mp3');
+    await FlameAudio.audioCache.load('explosion.mp3');
   }
 }
