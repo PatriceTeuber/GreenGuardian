@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:flame/game.dart';
@@ -122,6 +123,7 @@ class PlantGame extends FlameGame {
         value: 1000,
       ),
     ]);
+
   }
 
   // Überprüft, ob alle Pflanzen rechtzeitig gegossen wurden.
@@ -180,12 +182,25 @@ class PlantGame extends FlameGame {
   }
 
   void nextBoss() {
-    //TODO: Boss Typen hinzufügen dann random Boss. Schauen wie mit Level
-    currentBoss = Crow(level: 5, bossName: "Crow");
+    currentBoss = _getRandomBoss();
     bossBlueprint = currentBoss;
     add(currentBoss);
 
     _resetBossHealthBar();
+  }
+
+  BossMonster _getRandomBoss() {
+    final random = Random();
+
+    int monsterIndex = random.nextInt(3);
+    int level = random.nextInt(10);
+    if (monsterIndex == 0) {
+      return IceGolem(level: level);
+    } else if (monsterIndex == 1) {
+      return Crow(level: level);
+    } else {
+      return FireDemon(level: level);
+    }
   }
 
   void resetCurrentBoss() {
