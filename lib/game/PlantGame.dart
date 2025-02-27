@@ -6,13 +6,14 @@ import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:green_guardian/game/entities/boss/Crow.dart';
 import 'package:green_guardian/game/entities/boss/FireDemon.dart';
+import 'package:green_guardian/game/entities/items/BerryItem.dart';
 import 'package:green_guardian/game/entities/overlays/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
 import 'package:green_guardian/game/entities/boss/IceGolem.dart';
 import 'package:green_guardian/game/entities/effects/ExplosionItemEffect.dart';
 import 'package:green_guardian/game/entities/effects/HealEffect.dart';
 
-import 'entities/Item.dart';
+import 'entities/items/Item.dart';
 import 'entities/HousePlant.dart';
 import 'entities/boss/BossMonster.dart';
 
@@ -21,7 +22,7 @@ class PlantGame extends FlameGame {
 
   List<HousePlant> plants = [];
   double playerHealth = 100;
-  int currency = 0;
+  int currency = 1000;
   double lastXPEarned = 0;
   double playerXP = 0;
   late BossMonster currentBoss;
@@ -88,60 +89,7 @@ class PlantGame extends FlameGame {
 
     // Beispiel: Füge ein paar Items ins Inventar ein
     inventory.addAll([
-      Item(
-        name: 'Beere',
-        assetPath: 'assets/images/items/Berry.png',
-        effect: 'Heilt',
-        value: 200,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 500,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 200,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 400,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 150,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 1000,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 1000,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 1000,
-      ),
-      Item(
-        name: 'Bombe',
-        assetPath: 'assets/images/items/defaultBomb.png',
-        effect: 'Boss-Schaden',
-        value: 1000,
-      ),
+      BerryItem(),
     ]);
 
   }
@@ -185,7 +133,7 @@ class PlantGame extends FlameGame {
 
   Future<void> useItem(Item item) async {
     if (item.effect == 'Heilt') {
-      playerHealth += item.value;
+      playerHealth += (item.value + item.randomAddition);
       if (playerHealth > 100) playerHealth = 100;
       FlameAudio.play("heal.mp3");
       final effect = HealEffect();
@@ -194,7 +142,7 @@ class PlantGame extends FlameGame {
       print('Spieler wird geheilt: $playerHealth/100');
     } else if (item.effect == 'Boss-Schaden') {
 
-      final effect = ExplosionItemEffect(boss: currentBoss, itemDamage: item.value);
+      final effect = ExplosionItemEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition);
       add(effect);
 
     }

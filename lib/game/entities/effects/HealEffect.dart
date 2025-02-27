@@ -1,4 +1,5 @@
 import 'package:flame/components.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:green_guardian/game/PlantGame.dart';
 
 class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
@@ -39,6 +40,9 @@ class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (animation == null) return;
+
     _elapsedTime += dt;
     // Berechne die Gesamtdauer der Animation
     final totalDuration = Duration(
@@ -47,9 +51,12 @@ class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
           1000)
           .round(),
     );
-    if (_elapsedTime >= totalDuration.inMilliseconds / 1000.0) {
-      removeFromParent();
+    if (_elapsedTime >= totalDuration.inSeconds) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        removeFromParent();
+      });
     }
+
   }
 }
 

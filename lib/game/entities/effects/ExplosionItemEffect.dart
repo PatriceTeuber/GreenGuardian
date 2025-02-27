@@ -1,5 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:green_guardian/game/PlantGame.dart';
 import 'package:green_guardian/game/entities/boss/BossMonster.dart';
 
@@ -60,26 +61,28 @@ class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
   @override
   void update(double dt) {
     super.update(dt);
+
+    if (animation == null) return;
+
     _elapsedTime += dt;
 
     // Berechne die Gesamtdauer der Animation (in Sekunden)
     final totalSeconds = animation!.frames.fold<double>(0.0, (prev, frame) => prev + frame.stepTime);
 
-    // Trigger Explosion-Sound 200ms vor Ende der Animation:
     if (!_soundPlayed && _elapsedTime >= totalSeconds - 1) {
       FlameAudio.play("explosion.mp3", volume: 0.5);
       _soundPlayed = true;
     }
 
-    // Wende Schaden ca. 100ms nach dem Sound (also kurz vor Ende) an:
     if (!_damageApplied && _elapsedTime >= totalSeconds - 0.5) {
       boss.takeDamage(itemDamage);
       _damageApplied = true;
     }
 
-    // Entferne den Effekt, wenn die Animation vollständig abgespielt wurde.
     if (_elapsedTime >= totalSeconds) {
-      removeFromParent();
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        removeFromParent();
+      });
     }
   }
 }

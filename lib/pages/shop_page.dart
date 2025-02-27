@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 
+import '../game/PlantGame.dart';
+import '../game/Shop.dart';
+
 class ShopPage extends StatelessWidget {
-  const ShopPage({super.key});
+  final PlantGame plantGame;
+  const ShopPage({super.key, required this.plantGame});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Shop'),
-      ),
-      body: const Center(
-        child: Text('Shop Seite'),
-      ),
+      body: Shop(plantGame: plantGame),
     );
   }
 }
