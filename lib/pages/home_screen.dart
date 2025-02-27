@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import '../game/PlantGame.dart';
 import 'dashboard_page.dart';
 import 'plant_overview_page.dart';
 import 'battle_page.dart';
@@ -15,13 +17,8 @@ class _HomeScreenState extends State<HomeScreen> {
   // Standardmäßig wird die Pflanzenübersicht angezeigt.
   int _selectedIndex = 1;
 
-  final List<Widget> _pages = [
-    const DashboardPage(),
-    const PlantOverviewPage(),
-    const BattlePage(),
-    const ShopPage(),
-  ];
-
+  late final PlantGame plantGame;
+  late List<Widget> _pages = [];
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -33,6 +30,18 @@ class _HomeScreenState extends State<HomeScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Neue Pflanze hinzufügen')),
     );
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    plantGame = PlantGame();
+    _pages = [
+      const DashboardPage(),
+      const PlantOverviewPage(),
+      BattlePage(plantGame: plantGame),
+      ShopPage(plantGame: plantGame),
+    ];
   }
 
   @override

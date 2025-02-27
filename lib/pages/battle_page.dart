@@ -7,11 +7,11 @@ import '../game/entities/overlays/LoseScreenOverlay.dart';
 import '../game/entities/overlays/WinScreenOverlay.dart';
 
 class BattlePage extends StatelessWidget {
-  const BattlePage({super.key});
+  final PlantGame plantGame;
+  const BattlePage({super.key, required this.plantGame});
 
   @override
   Widget build(BuildContext context) {
-    final plantGame = PlantGame();
     return Scaffold(
       body: Stack(
         children: [
