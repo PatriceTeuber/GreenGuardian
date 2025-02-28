@@ -1,19 +1,22 @@
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:green_guardian/game/entities/boss/BossMonster.dart';
-import 'Effect.dart'; // Passe den Importpfad an
+import '../../PlantGame.dart';
+import 'ItemEffect.dart'; // Passe den Importpfad an
 
-class ExplosionItemEffect extends Effect {
+class ExplosionItemEffect extends ItemEffect {
   final BossMonster boss;
   final double itemDamage;
   bool _soundPlayed = false;
   bool _damageApplied = false;
+  late PlantGame plantGame;
 
   ExplosionItemEffect({
     Vector2? position,
     required this.boss,
     required this.itemDamage,
-  }) : super() {
+    required this.plantGame,
+  }) : super(plantGame) {
     // Setze Position und Größe im Konstruktor, da die Elternklasse keinen benannten Konstruktor hat
     this.position = position ?? Vector2.zero();
     this.size = Vector2.all(150);

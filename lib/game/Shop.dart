@@ -7,6 +7,7 @@ import 'package:green_guardian/game/entities/items/Item.dart';
 
 import 'PlantGame.dart';
 import 'entities/items/IceSpellItem.dart';
+import 'entities/items/WindSpell.dart';
 
 class Shop extends StatelessWidget {
   final PlantGame plantGame;
@@ -17,7 +18,8 @@ class Shop extends StatelessWidget {
     BerryItem(),
     BombItem(),
     HealthPotionItem(),
-    IceSpellItem()
+    IceSpellItem(),
+    WindSpellItem()
     // Weitere Items hier...
   ];
 

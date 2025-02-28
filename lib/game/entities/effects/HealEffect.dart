@@ -1,12 +1,13 @@
 import 'package:flame/components.dart';
 import 'package:green_guardian/game/PlantGame.dart';
-import 'Effect.dart';
+import 'ItemEffect.dart';
 
-class HealEffect extends Effect {
-  HealEffect({Vector2? position}) : super() {
+class HealEffect extends ItemEffect {
+  late PlantGame plantGame;
+  HealEffect({Vector2? position, required this.plantGame}) : super(plantGame) {
     // Weist die Position und Größe zu – falls keine Position übergeben wurde, wird Vector2.zero() genutzt.
     this.position = position ?? Vector2.zero();
-    this.size = Vector2.all(150);
+    size = Vector2.all(150);
   }
 
   @override

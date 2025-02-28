@@ -3,18 +3,18 @@ import 'dart:math';
 
 import 'Item.dart';
 
-class IceSpellItem extends Item {
+class WindSpellItem extends Item {
 
-  IceSpellItem({
-    String name = "Eiszauber",
-    String assetPath = "assets/images/items/IceSpell.png",
+  WindSpellItem({
+    String name = "Windzauber",
+    String assetPath = "assets/images/items/WindSpell.png",
     double value = 100,
     int price = 150,
     String description = "Ein Zauber der dem Gegner Schaden hinzufügt.",
   }) : super(
     name: name,
     assetPath: assetPath,
-    effect: 'Boss-Ice-Damage',
+    effect: 'Boss-Wind-Damage',
     value: value,
     price: price,
     description: description,
