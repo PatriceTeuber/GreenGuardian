@@ -6,6 +6,7 @@ import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:green_guardian/game/entities/boss/Crow.dart';
 import 'package:green_guardian/game/entities/boss/FireDemon.dart';
+import 'package:green_guardian/game/entities/effects/IceSpellEffect.dart';
 import 'package:green_guardian/game/entities/items/BerryItem.dart';
 import 'package:green_guardian/game/entities/overlays/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
@@ -145,7 +146,11 @@ class PlantGame extends FlameGame {
       final effect = ExplosionItemEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition);
       add(effect);
 
+    } else if (item.effect == "Boss-Ice-Damage") {
+      final effect = IceSpellEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition);
+      add(effect);
     }
+
     inventory.remove(item);
   }
 
@@ -224,5 +229,6 @@ class PlantGame extends FlameGame {
     await FlameAudio.audioCache.load('player_lose.mp3');
     await FlameAudio.audioCache.load('fire_attack.mp3');
     await FlameAudio.audioCache.load('fire_death.mp3');
+    await FlameAudio.audioCache.load('icespell.mp3');
   }
 }

@@ -2,9 +2,11 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:green_guardian/game/entities/items/BerryItem.dart';
 import 'package:green_guardian/game/entities/items/BombItem.dart';
+import 'package:green_guardian/game/entities/items/HealthPotionItem.dart';
 import 'package:green_guardian/game/entities/items/Item.dart';
 
 import 'PlantGame.dart';
+import 'entities/items/IceSpellItem.dart';
 
 class Shop extends StatelessWidget {
   final PlantGame plantGame;
@@ -13,12 +15,24 @@ class Shop extends StatelessWidget {
   // Beispielhafte Liste von Shop-Items
   final List<Item> shopItems = [
     BerryItem(),
-    BombItem()
+    BombItem(),
+    HealthPotionItem(),
+    IceSpellItem()
     // Weitere Items hier...
   ];
 
   @override
   Widget build(BuildContext context) {
+    final screenSize = MediaQuery.of(context).size;
+    // Beispiel: Jede Karte soll 30% der Bildschirmhöhe einnehmen
+    final double cardHeight = screenSize.height * 0.4;
+    // Berechne die verfügbare Breite pro Karte (unter Berücksichtigung von Padding und Spacing)
+    final int crossAxisCount = 2;
+    final double horizontalPadding = 16 * 2; // linkes und rechtes Padding
+    final double spacing = 16 * (crossAxisCount - 1);
+    final double cardWidth = (screenSize.width - horizontalPadding - spacing) / crossAxisCount;
+    final double aspectRatio = cardWidth / cardHeight;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shop'),
@@ -26,17 +40,17 @@ class Shop extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: GridView.builder(
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Zwei Items pro Zeile
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: crossAxisCount,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
-            childAspectRatio: 0.8,
+            childAspectRatio: aspectRatio,
           ),
           itemCount: shopItems.length,
           itemBuilder: (context, index) {
             final item = shopItems[index];
             return FlipCard(
-              direction: FlipDirection.HORIZONTAL, // oder vertical, je nach Präferenz
+              direction: FlipDirection.HORIZONTAL,
               front: Card(
                 elevation: 4,
                 shape: RoundedRectangleBorder(
@@ -45,7 +59,7 @@ class Shop extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Icon etwas tiefer positionieren
+                    // Positioniere das Icon etwas weiter unten
                     Padding(
                       padding: const EdgeInsets.only(top: 20.0),
                       child: Image.asset(
@@ -105,4 +119,5 @@ class Shop extends StatelessWidget {
       ),
     );
   }
+
 }
