@@ -1,25 +1,23 @@
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:green_guardian/game/PlantGame.dart';
 import 'package:green_guardian/game/entities/boss/BossMonster.dart';
+import 'Effect.dart'; // Passe den Importpfad an
 
-class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
-  double _elapsedTime = 0.0;
-  bool _soundPlayed = false;
-  bool _damageApplied = false;
+class ExplosionItemEffect extends Effect {
   final BossMonster boss;
   final double itemDamage;
-  bool _removalScheduled = false;
+  bool _soundPlayed = false;
+  bool _damageApplied = false;
 
   ExplosionItemEffect({
     Vector2? position,
     required this.boss,
     required this.itemDamage,
-  }) : super(
-    position: position ?? Vector2.zero(),
-    size: Vector2.all(150),
-  );
+  }) : super() {
+    // Setze Position und Größe im Konstruktor, da die Elternklasse keinen benannten Konstruktor hat
+    this.position = position ?? Vector2.zero();
+    this.size = Vector2.all(150);
+  }
 
   @override
   Future<void> onLoad() async {
@@ -38,14 +36,14 @@ class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
       Sprite.load('other/explosion/explosion12.png'),
       Sprite.load('other/explosion/explosion13.png'),
     ]);
-    // Animation ohne Loop
+    // Erstelle die Animation ohne Loop
     animation = SpriteAnimation.spriteList(sprites, stepTime: 0.15, loop: false);
 
-    // Setze die Position unten links, falls nicht anders übergeben
+    // Falls keine Position übergeben wurde, berechne eine anhand des Gegners
     if (position == Vector2.zero()) {
       position = _getVectorBasedOnEnemyType();
     }
-    // Skaliere den Effekt (z. B. 3x größer)
+    // Skaliere den Effekt, z. B. 3x größer
     scale = Vector2.all(3);
   }
 
@@ -55,36 +53,32 @@ class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
     } else if (boss.bossName.contains("Eisgolem")) {
       return Vector2(boss.position.x - 50, boss.position.y - 80);
     } else {
-      return Vector2(boss.position.x - 120, boss.position.y-100);
+      return Vector2(boss.position.x - 120, boss.position.y - 100);
     }
   }
 
   @override
   void update(double dt) {
     super.update(dt);
-
     if (animation == null) return;
 
-    _elapsedTime += dt;
+    // Berechne die Gesamtdauer der Animation
+    final totalSeconds = animation!.frames.fold<double>(
+      0.0,
+          (prev, frame) => prev + frame.stepTime,
+    );
 
-    // Berechne die Gesamtdauer der Animation (in Sekunden)
-    final totalSeconds = animation!.frames.fold<double>(0.0, (prev, frame) => prev + frame.stepTime);
-
-    if (!_soundPlayed && _elapsedTime >= totalSeconds - 1) {
+    // Sound abspielen, wenn kurz vor Ende der Animation
+    if (!_soundPlayed && elapsedTime >= totalSeconds - 1) {
       FlameAudio.play("explosion.mp3", volume: 0.5);
       _soundPlayed = true;
     }
 
-    if (!_damageApplied && _elapsedTime >= totalSeconds - 0.5) {
+    // Schaden zufügen, wenn kurz vor Ende der Animation
+    if (!_damageApplied && elapsedTime >= totalSeconds - 0.5) {
       boss.takeDamage(itemDamage);
       _damageApplied = true;
     }
-
-    if (_elapsedTime >= totalSeconds && !_removalScheduled && isMounted) {
-      _removalScheduled = true;
-      Future.microtask(() {
-        if (isMounted) removeFromParent();
-      });
-    }
+    // Das Entfernen der Komponente erfolgt bereits in Effect.update()
   }
 }
