@@ -10,6 +10,7 @@ class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
   bool _damageApplied = false;
   final BossMonster boss;
   final double itemDamage;
+  bool _removalScheduled = false;
 
   ExplosionItemEffect({
     Vector2? position,
@@ -79,9 +80,10 @@ class ExplosionItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
       _damageApplied = true;
     }
 
-    if (_elapsedTime >= totalSeconds) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        removeFromParent();
+    if (_elapsedTime >= totalSeconds && !_removalScheduled && isMounted) {
+      _removalScheduled = true;
+      Future.microtask(() {
+        if (isMounted) removeFromParent();
       });
     }
   }

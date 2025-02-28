@@ -4,6 +4,7 @@ import 'package:green_guardian/game/PlantGame.dart';
 
 class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
   double _elapsedTime = 0.0;
+  bool _removalScheduled = false;
 
   HealEffect({Vector2? position})
       : super(
@@ -45,15 +46,13 @@ class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
 
     _elapsedTime += dt;
     // Berechne die Gesamtdauer der Animation
-    final totalDuration = Duration(
-      milliseconds: (animation!.frames.fold<double>(
-          0.0, (prev, frame) => prev + frame.stepTime) *
-          1000)
-          .round(),
+    final totalDuration = animation!.frames.fold<double>(
+      0.0, (prev, frame) => prev + frame.stepTime,
     );
-    if (_elapsedTime >= totalDuration.inSeconds) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        removeFromParent();
+    if (_elapsedTime >= totalDuration && !_removalScheduled && isMounted) {
+      _removalScheduled = true;
+      Future.microtask(() {
+        if (isMounted) removeFromParent();
       });
     }
 
