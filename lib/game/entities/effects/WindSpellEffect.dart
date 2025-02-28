@@ -4,18 +4,18 @@ import 'package:green_guardian/game/entities/boss/BossMonster.dart';
 import '../../PlantGame.dart';
 import 'ItemEffect.dart';
 
-class IceSpellEffect extends ItemEffect {
+class WindSpellEffect extends ItemEffect {
   bool _soundPlayed = false;
   bool _damageApplied = false;
   final BossMonster boss;
   final double itemDamage;
   late PlantGame plantGame;
 
-  IceSpellEffect({
+  WindSpellEffect({
     Vector2? position,
     required this.boss,
     required this.itemDamage,
-    required this.plantGame
+    required this.plantGame,
   }) : super(plantGame) {
     this.position = position ?? Vector2.zero();
     size = Vector2.all(150);
@@ -24,23 +24,23 @@ class IceSpellEffect extends ItemEffect {
   @override
   Future<void> onLoad() async {
     final sprites = await Future.wait([
-      Sprite.load('other/icespell/ice1.png'),
-      Sprite.load('other/icespell/ice2.png'),
-      Sprite.load('other/icespell/ice3.png'),
-      Sprite.load('other/icespell/ice4.png'),
-      Sprite.load('other/icespell/ice5.png'),
-      Sprite.load('other/icespell/ice6.png'),
-      Sprite.load('other/icespell/ice7.png'),
-      Sprite.load('other/icespell/ice8.png'),
-      Sprite.load('other/icespell/ice9.png'),
-      Sprite.load('other/icespell/ice10.png'),
-      Sprite.load('other/icespell/ice11.png'),
-      Sprite.load('other/icespell/ice12.png'),
-      Sprite.load('other/icespell/ice13.png'),
-      Sprite.load('other/icespell/ice14.png'),
-      Sprite.load('other/icespell/ice15.png'),
-      Sprite.load('other/icespell/ice16.png'),
-      Sprite.load('other/icespell/ice17.png'),
+      Sprite.load('other/windspell/air1.png'),
+      Sprite.load('other/windspell/air2.png'),
+      Sprite.load('other/windspell/air3.png'),
+      Sprite.load('other/windspell/air4.png'),
+      Sprite.load('other/windspell/air5.png'),
+      Sprite.load('other/windspell/air6.png'),
+      Sprite.load('other/windspell/air7.png'),
+      Sprite.load('other/windspell/air8.png'),
+      Sprite.load('other/windspell/air9.png'),
+      Sprite.load('other/windspell/air10.png'),
+      Sprite.load('other/windspell/air11.png'),
+      Sprite.load('other/windspell/air12.png'),
+      Sprite.load('other/windspell/air13.png'),
+      Sprite.load('other/windspell/air14.png'),
+      Sprite.load('other/windspell/air15.png'),
+      Sprite.load('other/windspell/air16.png'),
+      Sprite.load('other/windspell/air17.png'),
     ]);
     // Animation ohne Loop
     animation = SpriteAnimation.spriteList(sprites, stepTime: 0.15, loop: false);
@@ -84,7 +84,7 @@ class IceSpellEffect extends ItemEffect {
 
     // Spielt den Sound nur einmal ab
     if (!_soundPlayed) {
-      FlameAudio.play("icespell.mp3", volume: 0.5);
+      FlameAudio.play("windspell.wav", volume: 0.5);
       _soundPlayed = true;
     }
 

@@ -2,13 +2,18 @@ import 'package:flame/components.dart';
 import 'package:flutter/cupertino.dart';
 import '../../PlantGame.dart';
 
-abstract class Effect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
+abstract class ItemEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
   bool isFinished = false;
   bool _removalScheduled = false;
   double _elapsedTime = 0.0;
+  late PlantGame plantGame;
 
   // Damit Unterklassen den verstrichenen Zeitwert nutzen können
   double get elapsedTime => _elapsedTime;
+
+  ItemEffect(PlantGame game) {
+    plantGame = game;
+  }
 
   @override
   void update(double dt) {
@@ -23,13 +28,8 @@ abstract class Effect extends SpriteAnimationComponent with HasGameRef<PlantGame
 
     if (_elapsedTime >= totalSeconds && !_removalScheduled && isMounted) {
       _removalScheduled = true;
-      // Entferne den Effekt direkt nach dem aktuellen Frame
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (isMounted) {
-          removeFromParent();
-          isFinished = true;
-        }
-      });
+      isFinished = true;
+      plantGame.destroyEffectList.add(this);
     }
   }
 }

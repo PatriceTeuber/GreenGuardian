@@ -2,11 +2,14 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flame/effects.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:green_guardian/game/entities/boss/Crow.dart';
 import 'package:green_guardian/game/entities/boss/FireDemon.dart';
 import 'package:green_guardian/game/entities/effects/IceSpellEffect.dart';
+import 'package:green_guardian/game/entities/effects/ItemEffect.dart';
+import 'package:green_guardian/game/entities/effects/WindSpellEffect.dart';
 import 'package:green_guardian/game/entities/items/BerryItem.dart';
 import 'package:green_guardian/game/entities/overlays/BattleBackground.dart';
 import 'package:green_guardian/game/entities/HealthBar.dart';
@@ -37,6 +40,7 @@ class PlantGame extends FlameGame {
 
   List<Item> inventory = [];
 
+  List<ItemEffect> destroyEffectList = [];
 
 
   @override
@@ -139,17 +143,20 @@ class PlantGame extends FlameGame {
       playerHealth += (item.value + item.randomAddition);
       if (playerHealth > 100) playerHealth = 100;
       FlameAudio.play("heal.mp3");
-      final effect = HealEffect();
+      final effect = HealEffect(plantGame: this);
       add(effect);
 
       print('Spieler wird geheilt: $playerHealth/100');
     } else if (item.effect == 'Boss-Schaden') {
 
-      final effect = ExplosionItemEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition);
+      final effect = ExplosionItemEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition, plantGame: this);
       add(effect);
 
     } else if (item.effect == "Boss-Ice-Damage") {
-      final effect = IceSpellEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition);
+      final effect = IceSpellEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition, plantGame: this);
+      add(effect);
+    } else if (item.effect == "Boss-Wind-Damage") {
+      final effect = WindSpellEffect(boss: currentBoss, itemDamage: item.value + item.randomAddition, plantGame: this);
       add(effect);
     }
 
@@ -213,13 +220,13 @@ class PlantGame extends FlameGame {
       bossHealthBar.currentHealth = currentBoss.health.toDouble();
     }
 
+    for (ItemEffect effect in List.from(destroyEffectList)) {
+      effect.opacity = 0;
+      effect.removeFromParent();
+      destroyEffectList.remove(effect);
+    }
   }
 
-  @override
-  void render(Canvas canvas) {
-    super.render(canvas);
-    // Rendering der Spielkomponenten (Pflanzen, Lebensanzeigen, Items etc.) erfolgt hier.
-  }
 
   Future<void> loadSounds() async {
     await FlameAudio.audioCache.load('heal.mp3');
@@ -232,5 +239,6 @@ class PlantGame extends FlameGame {
     await FlameAudio.audioCache.load('fire_attack.mp3');
     await FlameAudio.audioCache.load('fire_death.mp3');
     await FlameAudio.audioCache.load('icespell.mp3');
+    await FlameAudio.audioCache.load('windspell.wav');
   }
 }
