@@ -1,25 +1,22 @@
 import 'package:flame/components.dart';
 import 'package:flame_audio/flame_audio.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:green_guardian/game/PlantGame.dart';
 import 'package:green_guardian/game/entities/boss/BossMonster.dart';
+import 'Effect.dart';
 
-class IceSpellEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
-  double _elapsedTime = 0.0;
+class IceSpellEffect extends Effect {
   bool _soundPlayed = false;
   bool _damageApplied = false;
   final BossMonster boss;
   final double itemDamage;
-  bool _removalScheduled = false;
 
   IceSpellEffect({
     Vector2? position,
     required this.boss,
     required this.itemDamage,
-  }) : super(
-    position: position ?? Vector2.zero(),
-    size: Vector2.all(150),
-  );
+  }) : super() {
+    this.position = position ?? Vector2.zero();
+    size = Vector2.all(150);
+  }
 
   @override
   Future<void> onLoad() async {
@@ -52,7 +49,6 @@ class IceSpellEffect extends SpriteAnimationComponent with HasGameRef<PlantGame>
   }
 
   Vector2 _getVectorBasedOnEnemyType() {
-
     final screenWidth = gameRef.size.x;
     final screenHeight = gameRef.size.y;
 
@@ -81,30 +77,25 @@ class IceSpellEffect extends SpriteAnimationComponent with HasGameRef<PlantGame>
   @override
   void update(double dt) {
     super.update(dt);
-
     if (animation == null) return;
 
-    if (!_soundPlayed) { //
+    // Spielt den Sound nur einmal ab
+    if (!_soundPlayed) {
       FlameAudio.play("icespell.mp3", volume: 0.5);
       _soundPlayed = true;
     }
 
-    _elapsedTime += dt;
+    // Gesamtdauer der Animation
+    final totalSeconds = animation!.frames.fold<double>(
+      0.0,
+          (prev, frame) => prev + frame.stepTime,
+    );
 
-    // Berechne die Gesamtdauer der Animation (in Sekunden)
-    final totalSeconds = animation!.frames.fold<double>(0.0, (prev, frame) => prev + frame.stepTime);
-
-
-    if (!_damageApplied && _elapsedTime >= totalSeconds - 1.5) {
+    // Schaden zufügen, wenn kurz vor dem Ende der Animation
+    if (!_damageApplied && elapsedTime >= totalSeconds - 1.5) {
       boss.takeDamage(itemDamage);
       _damageApplied = true;
     }
-
-    if (_elapsedTime >= totalSeconds && !_removalScheduled && isMounted) {
-      _removalScheduled = true;
-      Future.microtask(() {
-        if (isMounted) removeFromParent();
-      });
-    }
+    // Der Aufruf von removeFromParent() wird bereits in Effect.update() erledigt.
   }
 }

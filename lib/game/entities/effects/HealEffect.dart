@@ -1,17 +1,13 @@
 import 'package:flame/components.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:green_guardian/game/PlantGame.dart';
+import 'Effect.dart';
 
-class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
-  double _elapsedTime = 0.0;
-  bool _removalScheduled = false;
-
-  HealEffect({Vector2? position})
-      : super(
-    // Wenn keine Position übergeben wurde, wird später in onLoad unten links gesetzt.
-    position: position ?? Vector2.zero(),
-    size: Vector2.all(150), // Basisgröße (wird später skaliert)
-  );
+class HealEffect extends Effect {
+  HealEffect({Vector2? position}) : super() {
+    // Weist die Position und Größe zu – falls keine Position übergeben wurde, wird Vector2.zero() genutzt.
+    this.position = position ?? Vector2.zero();
+    this.size = Vector2.all(150);
+  }
 
   @override
   Future<void> onLoad() async {
@@ -29,33 +25,14 @@ class HealEffect extends SpriteAnimationComponent with HasGameRef<PlantGame> {
     ]);
     animation = SpriteAnimation.spriteList(sprites, stepTime: 0.15, loop: false);
 
-    // Setze die Position unten links, falls nicht schon anders übergeben.
-    if (position == Vector2.zero()) {
-      position = Vector2(0, gameRef.size.y - size.y * 3 - 50); // Beachte: size.y * Skalierungsfaktor
+    // Falls keine Position übergeben wurde (also Vector2.zero()), wird eine Standardposition gesetzt.
+    if (this.position == Vector2.zero()) {
+      this.position = Vector2(0, gameRef.size.y - size.y * 3 - 50);
     }
 
-    // Skaliere den Effekt größer, z. B. 2x
+    // Skaliere den Effekt, z. B. 3x
     scale = Vector2.all(3);
   }
 
-  @override
-  void update(double dt) {
-    super.update(dt);
-
-    if (animation == null) return;
-
-    _elapsedTime += dt;
-    // Berechne die Gesamtdauer der Animation
-    final totalDuration = animation!.frames.fold<double>(
-      0.0, (prev, frame) => prev + frame.stepTime,
-    );
-    if (_elapsedTime >= totalDuration && !_removalScheduled && isMounted) {
-      _removalScheduled = true;
-      Future.microtask(() {
-        if (isMounted) removeFromParent();
-      });
-    }
-
-  }
+// Die update()-Logik übernimmt bereits die Elternklasse Effect.
 }
-
