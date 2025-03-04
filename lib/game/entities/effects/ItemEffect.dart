@@ -28,8 +28,31 @@ abstract class ItemEffect extends SpriteAnimationComponent with HasGameRef<Plant
 
     if (_elapsedTime >= totalSeconds && !_removalScheduled && isMounted) {
       _removalScheduled = true;
-      isFinished = true;
-      plantGame.destroyEffectList.add(this);
+      opacity = 0;  // Verstecke den Effekt sofort
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (isMounted) {
+          removeFromParent();
+          isFinished = true;
+        }
+      });
     }
+
+  }
+
+  @override
+  void render(Canvas canvas) {
+    // Wenn die Animation noch nicht geladen ist, nichts rendern.
+    if (animation == null) return;
+
+    // Berechne die Gesamtdauer der Animation
+    final totalSeconds = animation!.frames.fold<double>(
+      0.0,
+          (prev, frame) => prev + frame.stepTime,
+    );
+
+    // Wenn die Animation beendet ist, nicht rendern (sodass der letzte Frame nicht angezeigt wird)
+    if (_elapsedTime >= totalSeconds) return;
+
+    super.render(canvas);
   }
 }
