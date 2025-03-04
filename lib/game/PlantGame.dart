@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
 
-import 'package:flame/effects.dart';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:green_guardian/game/entities/boss/Crow.dart';
 import 'package:green_guardian/game/entities/boss/FireDemon.dart';
 import 'package:green_guardian/game/entities/effects/IceSpellEffect.dart';
@@ -16,22 +16,27 @@ import 'package:green_guardian/game/entities/HealthBar.dart';
 import 'package:green_guardian/game/entities/boss/IceGolem.dart';
 import 'package:green_guardian/game/entities/effects/ExplosionItemEffect.dart';
 import 'package:green_guardian/game/entities/effects/HealEffect.dart';
+import 'package:green_guardian/models/plant.dart';
+import 'package:provider/provider.dart';
 
+import '../services/GameStateProvider.dart';
+import '../services/PlantProvider.dart';
 import 'entities/items/Item.dart';
-import 'entities/HousePlant.dart';
 import 'entities/boss/BossMonster.dart';
 
 
 class PlantGame extends FlameGame {
 
-  List<HousePlant> plants = [];
+  final PlantProvider plantProvider;
   double playerHealth = 100;
+  double maxPlayerHealth = 100;
   int currency = 1000;
   double lastXPEarned = 0;
   double playerXP = 0;
   late BossMonster currentBoss;
   late BossMonster bossBlueprint;
   int bossCounter = 0;
+  final BuildContext gameContext;
 
   Timer? wateringCheckTimer;
 
@@ -42,6 +47,7 @@ class PlantGame extends FlameGame {
 
   List<ItemEffect> destroyEffectList = [];
 
+  PlantGame({required this.plantProvider, required this.gameContext});
 
   @override
   Future<void> onLoad() async {
@@ -76,19 +82,6 @@ class PlantGame extends FlameGame {
     );
     add(playerHealthBar);
 
-    // Beispielhafte Initialisierung von Pflanzen.
-    // In der Produktion ersetzt du dies durch die dynamische Registrierung der Pflanzen.
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 10), // Simuliert 1 Woche als 10 Sekunden
-    ));
-    plants.add(HousePlant(
-      name: "Ficus",
-      lastWatered: DateTime.now(),
-      wateringInterval: Duration(seconds: 30), // Simuliert 1 Woche als 10 Sekunden
-    ));
-
     // Starte einen Timer, der jede Sekunde den Gieß-Status aller Pflanzen überprüft.
     wateringCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       checkWateringStatus();
@@ -103,33 +96,22 @@ class PlantGame extends FlameGame {
 
   // Überprüft, ob alle Pflanzen rechtzeitig gegossen wurden.
   void checkWateringStatus() {
-    for (var plant in plants) {
-      // Falls eine Pflanze nicht innerhalb des Intervalls gegossen wurde, greift der Boss an.
-      if (!plant.isWatered) {
+    for (var plant in plantProvider.plants) {
+      // Greift nur an, wenn die Pflanze überfällig ist
+      if (plant.isOverdue) {
         bossAttack(plant);
       }
     }
   }
 
-  // Methode, um eine spezifische Pflanze zu gießen.
-  void waterPlant(String plantName) {
-    for (var plant in plants) {
-      if (plant.name == plantName) {
-        plant.water();
-        currency += 10; // Belohnung für erfolgreiches Gießen
-        print('${plant.name} wurde gegossen! Währung: $currency');
-      }
-    }
-  }
-
   // Der Boss greift an, wenn eine Pflanze überfällig ist.
-  void bossAttack(HousePlant plant) {
+  void bossAttack(Plant plant) {
     // Angriff nur einmal pro versäumtem Gießen
     if (!plant.attacked) {
       playerHealth -= currentBoss.attackDamage;
       plant.attacked = true;
       currentBoss.attack();
-      print('Boss greift an, da ${plant.name} nicht rechtzeitig gegossen wurde. Spieler HP: $playerHealth');
+      print('Boss greift an, da ${plant.plantInfo.name} nicht rechtzeitig gegossen wurde. Spieler HP: $playerHealth');
     }
   }
 
@@ -224,6 +206,12 @@ class PlantGame extends FlameGame {
       effect.removeFromParent();
       destroyEffectList.remove(effect);
     }
+
+    final gameState = Provider.of<GameStateProvider>(gameContext, listen: false);
+    gameState.updatePlayerHealth(playerHealth);
+    gameState.updateCurrency(currency);
+    gameState.updatePlayerXP(playerXP);
+    gameState.updateBossHealth(currentBoss.health.toDouble());
   }
 
 

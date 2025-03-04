@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:green_guardian/game/PlantGame.dart';
 import 'package:green_guardian/pages/home_screen.dart';
+import 'package:green_guardian/services/GameStateProvider.dart';
+import 'package:green_guardian/services/PlantProvider.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: ".env");
-  runApp(const MyApp());
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (_) => PlantProvider()),
+      ChangeNotifierProvider(create: (_) => GameStateProvider())
+    ],
+    child: MyApp(),
+  ),);
 }
 
 class MyApp extends StatelessWidget {

@@ -1,4 +1,8 @@
-// Modell zur Repräsentation der Pflanzeninformationen
+import 'package:json_annotation/json_annotation.dart';
+
+part 'PlantInfo.g.dart';
+
+@JsonSerializable()
 class PlantInfo {
   final String name;
   final String type;
@@ -12,13 +16,11 @@ class PlantInfo {
     required this.location,
   });
 
-  // Annahme: Die API gibt ein JSON zurück, das zu diesem Modell passt
-  factory PlantInfo.fromJson(Map<String, dynamic> json) {
-    return PlantInfo(
-      name: json['name'] ?? '',
-      type: json['type'] ?? '',
-      wateringDays: List<String>.from(json['wateringDays'] ?? []),
-      location: json['location'] ?? '',
-    );
+  factory PlantInfo.fromJson(Map<String, dynamic> json) =>
+      _$PlantInfoFromJson(json);
+
+  @override
+  String toString() {
+    return 'PlantInfo{name: $name, type: $type, wateringDays: $wateringDays, location: $location}';
   }
 }

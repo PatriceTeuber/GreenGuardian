@@ -13,13 +13,14 @@ class OpenAIPlantService {
 
   Future<PlantInfo> getPlantInfo(String plantName) async {
     final prompt = '''
-      Bitte liefere mir Informationen über die Pflanze "$plantName" in folgendem Format:
+      Bitte liefere mir Informationen über die Pflanze "$plantName" in folgendem Format auf deutsch:
       {
         "name": "...",
         "type": "...",
         "wateringDays": ["...", "..."],
         "location": "..."
       }
+      Nur das Format befüllen und keine anderen Infos oder Redewendungen. Bitte Format ohne ```json davor und ohne ``` am Ende.
       ''';
 
     final response = await http.post(
@@ -30,7 +31,7 @@ class OpenAIPlantService {
       },
       // Beachte hier die Nutzung des Feldes "messages" statt "prompt"
       body: jsonEncode({
-        'model': 'gpt-4', // Nutze hier ein gültiges Modell, z.B. 'gpt-4' oder 'gpt-3.5-turbo'
+        'model': 'gpt-4o', // Nutze hier ein gültiges Modell, z.B. 'gpt-4' oder 'gpt-3.5-turbo'
         'messages': [
           {"role": "user", "content": prompt}
         ],

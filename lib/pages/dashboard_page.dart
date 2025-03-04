@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../models/plant.dart';
-import '../models/player.dart';
+import '../services/GameStateProvider.dart';
+import '../services/PlantProvider.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -11,50 +12,18 @@ class DashboardPage extends StatefulWidget {
 }
 
 class DashboardPageState extends State<DashboardPage> {
-  late Player _player;
-  late List<Plant> _plants;
 
   @override
   void initState() {
     super.initState();
-    _loadPlayerAndPlants();
-  }
 
-  void _loadPlayerAndPlants() {
-    setState(() {
-      //TODO: Später Requests vom AWS API Gateway einbauen;
-      _player = Player(
-          id: 3,
-          name: 'Robert Testerheld',
-          points: 1400,
-          xp: 300
-      );
-
-      _plants = [
-        Plant(
-          id: 1,
-          playerId: 3,
-          name: 'Monstera',
-          type: 'Zimmerpflanze',
-          imagePath: 'https://de-de.bakker.com/cdn/shop/files/VIS_018129_1_BK_1705411387376.jpg?v=1705411425',
-          wateringIntervalDays: 3,
-          lastWatered: DateTime.now().subtract(const Duration(days: 1)),
-        ),
-        Plant(
-          id: 2,
-          playerId: 3,
-          name: 'Sansevieria',
-          type: 'Luftreiniger',
-          imagePath: 'https://www.ikea.com/de/de/images/products/sansevieria-trifasciata-pflanze-bogenhanf__0908898_pe676659_s5.jpg',
-          wateringIntervalDays: 7,
-          lastWatered: DateTime.now().subtract(const Duration(days: 5)),
-        ),
-      ];
-    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final gameState = Provider.of<GameStateProvider>(context);
+    final List<Plant> plants = Provider.of<PlantProvider>(context).plants;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dashboard"),
@@ -68,27 +37,29 @@ class DashboardPageState extends State<DashboardPage> {
             Card(
               elevation: 4,
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _player.name,
+                      "Statistik",
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8.0),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        _buildStatusItem("Punkte", _player.points.toString()),
-                        _buildStatusItem("Level", 2.toString()),
-                        _buildStatusItem("XP", "${2}/${2}"),
+                        _buildStatusItem("XP", gameState.playerXP.toStringAsFixed(0)),
+                        _buildStatusItem("Spieler HP", gameState.playerHealth.toStringAsFixed(0)),
+                        _buildStatusItem("Boss HP", gameState.bossHealth.toStringAsFixed(0)),
+                        _buildStatusItem("Währung", gameState.currency.toString()),
                       ],
                     ),
                   ],
-                )
+                ),
               ),
             ),
             const SizedBox(height: 16.0),
@@ -111,19 +82,19 @@ class DashboardPageState extends State<DashboardPage> {
                     ListView.builder(
                       padding: const EdgeInsets.all(8.0),
                       shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(), // Optional, um Scrollen zu deaktivieren
-                      itemCount: _plants.length,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: plants.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final plant = _plants[index];
+                        final plant = plants[index];
                         return ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(Icons.local_florist, color: Colors.green),
-                          title: Text(plant.name),
-                          subtitle: Text("${plant.daysUntilNextWatering} Tage bis zum nächsten Gießen"),
+                          title: Text(plant.plantInfo.name),
+                          subtitle: Text("${plant.getDaysUntilWatering()} Tage bis zum nächsten Gießen"),
                           trailing: IconButton(
                             icon: const Icon(Icons.opacity, color: Colors.blueAccent),
                             onPressed: () {
-                              //TODO Aktion: Pflanze gießen
+                              // Beispiel: Pflanze gießen (hier könnte auch ein Provider-Aufruf erfolgen)
                             },
                           ),
                         );
@@ -134,69 +105,18 @@ class DashboardPageState extends State<DashboardPage> {
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
-            // Boss-Kampf Status Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Boss-Kampf",
-                        style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 8.0),
-                    LinearProgressIndicator(
-                      value: 2, // % Fortschritt
-                      backgroundColor: Colors.grey[300],
-                      valueColor:
-                      const AlwaysStoppedAnimation<Color>(Colors.redAccent),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text("Boss HP: ${2}%"),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            // Boss-Kampf Status Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12)),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text("Lebens-Status",
-                        style: Theme.of(context).textTheme.titleLarge),
-                    const SizedBox(height: 8.0),
-                    LinearProgressIndicator(
-                      value: 2, // Beispiel: 50% Fortschritt
-                      backgroundColor: Colors.grey[300],
-                      valueColor:
-                      const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
-                    ),
-                    const SizedBox(height: 8.0),
-                    Text("Spieler HP: ${2}%"),
-                  ],
-                ),
-              ),
-            ),
+            // Weitere Cards (z.B. Boss-Kampf, Lebens-Status) hier einbauen...
           ],
         ),
       ),
     );
   }
 
+
   Widget _buildStatusItem(String label, String value) {
     return Column(
       children: [
-        Text(value,
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
         const SizedBox(height: 4.0),
         Text(label),
       ],

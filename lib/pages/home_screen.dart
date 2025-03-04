@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:green_guardian/services/OpenAIPlantService.dart';
+import 'package:green_guardian/models/plant.dart';
+import 'package:provider/provider.dart';
+import '../services/GameStateProvider.dart';
+import '../services/OpenAIPlantService.dart';
+import '../services/PlantProvider.dart';
 import '../game/PlantGame.dart';
 import 'dashboard_page.dart';
 import 'plant_overview_page.dart';
@@ -15,12 +18,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // Standardmäßig wird die Pflanzenübersicht angezeigt.
   int _selectedIndex = 1;
   late OpenAIPlantService service;
-
   late final PlantGame plantGame;
-  late List<Widget> _pages = [];
+  late List<Widget> _pages;
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -28,35 +30,102 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _onAddPlant() {
-    // Hier kannst du später die Logik zum Hinzufügen einer neuen Pflanze einbauen.
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Neue Pflanze hinzufügen')),
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: <Widget>[
+              ListTile(
+                leading: Icon(Icons.text_fields),
+                title: Text('Mit Pflanzennamen suchen'),
+                onTap: () {
+                  Navigator.pop(context);
+                  _showPlantNameInputDialog();
+                },
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showPlantNameInputDialog() {
+    // Speichere den Eltern-Kontext (aus HomeScreen) in einer Variablen.
+    final parentContext = context;
+
+    showDialog(
+      context: parentContext,
+      builder: (dialogContext) {
+        String plantName = '';
+        return AlertDialog(
+          title: Text('Pflanzenname eingeben'),
+          content: TextField(
+            onChanged: (value) {
+              plantName = value;
+            },
+            decoration: InputDecoration(hintText: "Name der Pflanze"),
+          ),
+          actions: [
+            TextButton(
+              child: Text('Abbrechen'),
+              onPressed: () => Navigator.of(dialogContext).pop(),
+            ),
+            TextButton(
+              child: Text('Suchen'),
+              onPressed: () {
+                // Schließe den Dialog.
+                Navigator.of(dialogContext).pop();
+                // Nutze den gespeicherten Eltern-Kontext für den Provider-Zugriff.
+                service.getPlantInfo(plantName).then((plantInfo) {
+                  Provider.of<PlantProvider>(parentContext, listen: false)
+                      .addPlant(Plant(
+                    id: 1,
+                    //TODO: Bilder?
+                    imagePath: "https://www.ikea.com/de/en/images/products/fejka-artificial-potted-plant-in-outdoor-monstera__0959226_pe809439_s5.jpg?f=xs",
+                    plantInfo: plantInfo, attacked: false,
+                  ));
+                }).catchError((error) {
+                  print("Fehler: $error");
+                });
+              },
+            ),
+          ],
+        );
+      },
     );
   }
 
   @override
   void initState() {
     super.initState();
-    plantGame = PlantGame();
-    service = OpenAIPlantService();
-    _pages = [
-      const DashboardPage(),
-      const PlantOverviewPage(),
-      BattlePage(plantGame: plantGame),
-      ShopPage(plantGame: plantGame),
-    ];
-    service.getPlantInfo("weiße Orchidee").then((future) => {
-      print("${future.name} ${future.location} ${future.type} ${future.wateringDays}")
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final plantProvider = Provider.of<PlantProvider>(context, listen: false);
+      setState(() {
+        plantGame = PlantGame(plantProvider: plantProvider, gameContext: context);
+        _pages = [
+          const DashboardPage(),
+          const PlantOverviewPage(),
+          BattlePage(plantGame: plantGame),
+          ShopPage(plantGame: plantGame),
+        ];
+      });
     });
+    service = OpenAIPlantService();
   }
 
   @override
   Widget build(BuildContext context) {
+    // Zugriff auf den Provider hier, wenn benötigt:
+    final plants = Provider.of<PlantProvider>(context).plants;
+    final gameState = Provider.of<GameStateProvider>(context);
+
     return Scaffold(
       body: _pages[_selectedIndex],
       floatingActionButton: FloatingActionButton(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(32.0), // Erhöht den Radius des Buttons
+          borderRadius: BorderRadius.circular(32.0),
         ),
         onPressed: _onAddPlant,
         child: const Icon(Icons.add),
@@ -70,7 +139,6 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              // Dashboard-Icon
               IconButton(
                 icon: Icon(
                   Icons.dashboard,
@@ -78,7 +146,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onPressed: () => _onItemTapped(0),
               ),
-              // Pflanzenübersicht-Icon
               IconButton(
                 icon: Icon(
                   Icons.local_florist,
@@ -86,9 +153,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onPressed: () => _onItemTapped(1),
               ),
-              // Leeres Feld, um Platz für den FAB zu reservieren
               const SizedBox(width: 48),
-              // Kampf-Icon (z. B. Sports MMA)
               IconButton(
                 icon: Icon(
                   Icons.military_tech,
@@ -96,7 +161,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 onPressed: () => _onItemTapped(2),
               ),
-              // Shop-Icon
               IconButton(
                 icon: Icon(
                   Icons.shopping_cart,
