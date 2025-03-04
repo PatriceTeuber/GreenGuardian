@@ -83,6 +83,7 @@ flutter:
     - assets/images/other/icespell/
     - assets/images/other/windspell/
     - assets/audio/
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
