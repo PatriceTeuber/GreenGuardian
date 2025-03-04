@@ -112,7 +112,6 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-
   Widget _buildStatusItem(String label, String value) {
     return Column(
       children: [
