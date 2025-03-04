@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../models/boss.dart';
 import '../models/plant.dart';
 import '../models/player.dart';
 
@@ -14,7 +13,6 @@ class DashboardPage extends StatefulWidget {
 class DashboardPageState extends State<DashboardPage> {
   late Player _player;
   late List<Plant> _plants;
-  late Boss _boss;
 
   @override
   void initState() {
@@ -29,10 +27,7 @@ class DashboardPageState extends State<DashboardPage> {
           id: 3,
           name: 'Robert Testerheld',
           points: 1400,
-          level: 3,
-          xp: 300,
-          maxLP: 500,
-          currentLP: 342
+          xp: 300
       );
 
       _plants = [
@@ -55,14 +50,6 @@ class DashboardPageState extends State<DashboardPage> {
           lastWatered: DateTime.now().subtract(const Duration(days: 5)),
         ),
       ];
-
-      _boss = Boss(
-        id: 1,
-        playerId: 3,
-        level: 2,
-        maxLP: 2000,
-        currentLP: 234
-      );
     });
   }
 
@@ -96,8 +83,8 @@ class DashboardPageState extends State<DashboardPage> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         _buildStatusItem("Punkte", _player.points.toString()),
-                        _buildStatusItem("Level", _player.level.toString()),
-                        _buildStatusItem("XP", "${_player.currentLP}/${_player.maxLP}"),
+                        _buildStatusItem("Level", 2.toString()),
+                        _buildStatusItem("XP", "${2}/${2}"),
                       ],
                     ),
                   ],
@@ -162,13 +149,13 @@ class DashboardPageState extends State<DashboardPage> {
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8.0),
                     LinearProgressIndicator(
-                      value: _boss.getProgress, // % Fortschritt
+                      value: 2, // % Fortschritt
                       backgroundColor: Colors.grey[300],
                       valueColor:
                       const AlwaysStoppedAnimation<Color>(Colors.redAccent),
                     ),
                     const SizedBox(height: 8.0),
-                    Text("Boss HP: ${_boss.getProgress}%"),
+                    Text("Boss HP: ${2}%"),
                   ],
                 ),
               ),
@@ -188,13 +175,13 @@ class DashboardPageState extends State<DashboardPage> {
                         style: Theme.of(context).textTheme.titleLarge),
                     const SizedBox(height: 8.0),
                     LinearProgressIndicator(
-                      value: _player.getProgress, // Beispiel: 50% Fortschritt
+                      value: 2, // Beispiel: 50% Fortschritt
                       backgroundColor: Colors.grey[300],
                       valueColor:
                       const AlwaysStoppedAnimation<Color>(Colors.greenAccent),
                     ),
                     const SizedBox(height: 8.0),
-                    Text("Spieler HP: ${_player.getProgress}%"),
+                    Text("Spieler HP: ${2}%"),
                   ],
                 ),
               ),

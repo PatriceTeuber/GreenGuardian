@@ -1,6 +1,5 @@
-import 'entity.dart';
 
-class Player extends Entity{
+class Player{
   final int id;
   final String name;
   int points;
@@ -10,9 +9,6 @@ class Player extends Entity{
     required this.id,
     required this.name,
     required this.points,
-    required super.level,
     required this.xp,
-    required super.maxLP,
-    required super.currentLP,
   });
 }
