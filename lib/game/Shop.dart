@@ -84,6 +84,9 @@ class Shop extends StatelessWidget {
                         if (plantGame.currency >= item.price) {
                           plantGame.currency -= item.price;
                           plantGame.inventory.add(item);
+                          print("Kauf erfolgt!: ${item.name}");
+                        } else {
+                          print("Geld reicht nicht mehr! ${plantGame.currency}");
                         }
                       },
                       child: const Text('Kaufen'),

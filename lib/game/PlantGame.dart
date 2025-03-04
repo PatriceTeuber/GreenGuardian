@@ -221,7 +221,6 @@ class PlantGame extends FlameGame {
     }
 
     for (ItemEffect effect in List.from(destroyEffectList)) {
-      effect.opacity = 0;
       effect.removeFromParent();
       destroyEffectList.remove(effect);
     }
