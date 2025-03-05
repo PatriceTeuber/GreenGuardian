@@ -14,6 +14,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
   double attackDamage;
   double xpAmount;
   double health;
+  double maxHealth;
   bool isAttacking = false;
   bool isTakingDamage = false;
   bool isDying = false;
@@ -48,6 +49,7 @@ abstract class BossMonster extends SpriteAnimationComponent with HasGameRef<Plan
     required this.level,
     required this.bossName,
     this.health = 100,
+    this.maxHealth = 100,
     this.xOffsetFactor = 0,
     this.yOffsetFactor = 0,
     this.scalingFactor = 0,

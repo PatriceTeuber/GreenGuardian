@@ -20,6 +20,29 @@ class FireDemon extends BossMonster {
       deathSoundSrc: "fire_death.mp3",
       attackDamage: attackDamage + level * 1.1,
       health: health + 10 * level,
+      maxHealth: health,
+      bossName: "$bossName LV. $level",
+      xpAmount: xpAmount + level * 10
+  );
+
+  FireDemon.byDatabase({
+    double attackDamage = 20,
+    required super.level,
+    String bossName = "Feuerdämon",
+    double xpAmount = 15,
+    required super.health,
+    required super.maxHealth,
+    super.xOffsetFactor = -0.3,
+    super.yOffsetFactor = 0.2,
+    super.scalingFactor = 1,
+    super.pixelWidth = 288,
+    super.pixelHeight = 160,
+  }) : super(
+      labelXOffsetFactor: 0.3,
+      labelYOffsetFactor: 0.31,
+      attackSoundSrc: "fire_attack.mp3",
+      deathSoundSrc: "fire_death.mp3",
+      attackDamage: attackDamage + level * 1.1,
       bossName: "$bossName LV. $level",
       xpAmount: xpAmount + level * 10
   );

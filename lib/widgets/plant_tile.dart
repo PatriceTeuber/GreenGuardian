@@ -20,15 +20,18 @@ class PlantTile extends StatelessWidget {
         elevation: 4,
         child: Column(
           children: [
-            // Obere Hälfte: Bild der Pflanze
             Expanded(
               flex: 2,
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
-                child: Image.network(
-                  plant.imagePath,
-                  fit: BoxFit.cover,
+                child: Container(
                   width: double.infinity,
+                  color: Colors.green.shade100, // Hintergrundfarbe optional
+                  child: const Icon(
+                    Icons.local_florist, // Pflanzen-Icon
+                    size: 100,
+                    color: Colors.green,
+                  ),
                 ),
               ),
             ),

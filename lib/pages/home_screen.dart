@@ -82,8 +82,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   Provider.of<PlantProvider>(parentContext, listen: false)
                       .addPlant(Plant(
                     id: 1,
-                    //TODO: Bilder?
-                    imagePath: "https://www.ikea.com/de/en/images/products/fejka-artificial-potted-plant-in-outdoor-monstera__0959226_pe809439_s5.jpg?f=xs",
+                    userId: 1,
                     plantInfo: plantInfo, attacked: false,
                   ));
                 }).catchError((error) {

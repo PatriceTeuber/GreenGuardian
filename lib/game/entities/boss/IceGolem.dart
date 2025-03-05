@@ -21,6 +21,7 @@ class IceGolem extends BossMonster {
     deathSoundSrc: "golem_death.mp3",
     attackDamage: attackDamage + level * 1.25,
     health: health + 25 * level,
+    maxHealth: health,
     xOffsetFactor: xOffsetFactor,
     yOffsetFactor: yOffsetFactor,
     scalingFactor: scalingFactor,
@@ -29,6 +30,35 @@ class IceGolem extends BossMonster {
     bossName: "$bossName LV. $level",
     level: level,
     xpAmount: xpAmount + level * 5
+  );
+
+  IceGolem.byDatabase({
+    double attackDamage = 10,
+    required int level,
+    String bossName = "Eisgolem",
+    double xpAmount = 10,
+    required super.health,
+    required super.maxHealth,
+    double xOffsetFactor = 0.025,
+    double yOffsetFactor = 0.35,
+    double scalingFactor = 1,
+    int pixelWidth = 192,
+    int pixelHeight = 128,
+
+  }) : super(
+      labelXOffsetFactor: 0.36,
+      labelYOffsetFactor: yOffsetFactor,
+      attackSoundSrc: "golem_attack.mp3",
+      deathSoundSrc: "golem_death.mp3",
+      attackDamage: attackDamage + level * 1.25,
+      xOffsetFactor: xOffsetFactor,
+      yOffsetFactor: yOffsetFactor,
+      scalingFactor: scalingFactor,
+      pixelWidth: pixelWidth,
+      pixelHeight: pixelHeight,
+      bossName: "$bossName LV. $level",
+      level: level,
+      xpAmount: xpAmount + level * 5
   );
 
   @override
