@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flip_card/flip_card.dart';
+import 'dart:async';
 import '../models/plant.dart';
 
 class PlantTile extends StatelessWidget {
@@ -10,13 +11,6 @@ class PlantTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String wateringText;
-    if (plant.getDaysUntilWatering() > 0) {
-      wateringText = 'Noch ${plant.getDaysUntilWatering()} Tage bis zum nächsten Gießen';
-    } else {
-      wateringText = 'Pflanze muss jetzt gegossen werden!';
-    }
-
     return FlipCard(
       direction: FlipDirection.HORIZONTAL, // Alternativ: FlipDirection.VERTICAL
       front: Card(
@@ -52,12 +46,22 @@ class PlantTile extends StatelessWidget {
                       style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     Text(plant.plantInfo.type),
-                    Text(
-                      wateringText,
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: plant.getDaysUntilWatering() > 0 ? Colors.black : Colors.red,
-                      ),
+                    // Hier wird der Countdown aktualisiert:
+                    StreamBuilder(
+                      stream: Stream.periodic(const Duration(seconds: 1)),
+                      builder: (context, snapshot) {
+                        int days = plant.getDaysUntilWatering();
+                        String wateringText = days > 0
+                            ? 'Noch $days Tage bis zum nächsten Gießen'
+                            : 'Pflanze muss jetzt gegossen werden!';
+                        return Text(
+                          wateringText,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: days > 0 ? Colors.black : Colors.red,
+                          ),
+                        );
+                      },
                     ),
                     ElevatedButton.icon(
                       onPressed: onWater,

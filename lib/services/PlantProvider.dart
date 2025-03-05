@@ -22,6 +22,7 @@ class PlantProvider with ChangeNotifier {
     // Berechne nextWateringDate neu
     plant.nextWateringDate = plant.getNextWateringDayDate(plant.plantInfo);
     // Informiere alle Zuhörer, dass sich der Zustand geändert hat
+    print(plant.toString());
     notifyListeners();
   }
 }

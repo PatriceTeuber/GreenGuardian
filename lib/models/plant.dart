@@ -4,8 +4,8 @@ class Plant {
   final int id;
   final String imagePath;
   late PlantInfo plantInfo;
-  DateTime nextWateringDate = DateTime.now().subtract(Duration(days: 1));
-  DateTime lastWatered = DateTime.now().subtract(Duration(days: 1));
+  DateTime nextWateringDate = DateTime.now().subtract(Duration(days: 5));
+  DateTime lastWatered = DateTime.now().subtract(Duration(days: 5));
   bool attacked;
 
   Plant({
@@ -34,47 +34,57 @@ class Plant {
   }
 
   DateTime getNextWateringDayDate(PlantInfo plantInfo) {
-    DateTime now = lastWatered;
-    final Map<String, int> dayToIndex = {
-      "Montag": 1,
-      "Dienstag": 2,
-      "Mittwoch": 3,
-      "Donnerstag": 4,
-      "Freitag": 5,
-      "Samstag": 6,
-      "Sonntag": 7,
+    // Mapping der Wochentage auf Ganzzahlen
+    Map<String, int> dayMapping = {
+      'Montag': DateTime.monday,
+      'Dienstag': DateTime.tuesday,
+      'Mittwoch': DateTime.wednesday,
+      'Donnerstag': DateTime.thursday,
+      'Freitag': DateTime.friday,
+      'Samstag': DateTime.saturday,
+      'Sonntag': DateTime.sunday,
     };
 
-    List<int> wateringIndices = plantInfo.wateringDays
-        .map((day) => dayToIndex[day])
-        .whereType<int>()
-        .toList();
+    // Konvertieren der Bewässerungstage in eine Liste von Ganzzahlen
+    List<int> wateringDays = plantInfo.wateringDays.map((day) => dayMapping[day]!).toList();
+    wateringDays.sort();
 
-    if (wateringIndices.isEmpty) {
-      return now;
-    }
-    wateringIndices.sort();
+    // Aktueller Wochentag
+    int today = DateTime.now().weekday;
 
-    int currentWeekday = now.weekday;
-    int? nextDayIndex;
-
-    for (int index in wateringIndices) {
-      if (index > currentWeekday) {
-        nextDayIndex = index;
+    // Nächster geplanter Bewässerungstag
+    int? nextWateringDay;
+    for (int day in wateringDays) {
+      if (day > today) {
+        nextWateringDay = day;
         break;
       }
     }
+    // Wenn kein zukünftiger Tag gefunden wurde, nehmen wir den ersten Tag der nächsten Woche
+    nextWateringDay ??= wateringDays.first;
 
-    int daysToAdd;
-    if (nextDayIndex != null) {
-      daysToAdd = nextDayIndex - currentWeekday;
-    } else {
-      daysToAdd = (7 - currentWeekday) + wateringIndices.first;
+    // Berechnung des nächsten Bewässerungsdatums
+    int daysUntilNextWatering = (nextWateringDay - today + 7) % 7;
+    if (daysUntilNextWatering == 0) daysUntilNextWatering = 7; // Falls heute der Bewässerungstag ist, auf nächste Woche setzen
+    DateTime nextWateringDate = DateTime.now().add(Duration(days: daysUntilNextWatering));
+
+    // Anpassung des nächsten Bewässerungstags basierend auf der Bewässerungshistorie
+    int daysSinceLastWatering = DateTime.now().difference(lastWatered).inDays;
+    if (daysSinceLastWatering < 3) {
+      // Wenn in den letzten 3 Tagen bewässert wurde, überspringen wir den nächsten geplanten Tag
+      int currentIndex = wateringDays.indexOf(nextWateringDay);
+      int nextIndex = (currentIndex + 1) % wateringDays.length;
+      nextWateringDay = wateringDays[nextIndex];
+      daysUntilNextWatering = (nextWateringDay - today + 7) % 7;
+      if (daysUntilNextWatering == 0) daysUntilNextWatering = 7;
+      nextWateringDate = DateTime.now().add(Duration(days: daysUntilNextWatering));
     }
 
-    return now.add(Duration(days: daysToAdd));
+    return nextWateringDate;
   }
 
-
-
+  @override
+  String toString() {
+    return 'Plant{id: $id, imagePath: $imagePath, plantInfo: $plantInfo, nextWateringDate: $nextWateringDate, lastWatered: $lastWatered, attacked: $attacked}';
+  }
 }

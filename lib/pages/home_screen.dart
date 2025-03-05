@@ -21,7 +21,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 1;
   late OpenAIPlantService service;
   late final PlantGame plantGame;
-  late List<Widget> _pages;
+  late List<Widget> _pages = [];
 
   void _onItemTapped(int index) {
     setState(() {
