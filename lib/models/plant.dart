@@ -2,16 +2,16 @@ import 'package:green_guardian/models/PlantInfo.dart';
 
 class Plant {
   final int id;
-  final String imagePath;
+  final int userId;
   late PlantInfo plantInfo;
   DateTime nextWateringDate = DateTime.now().subtract(Duration(days: 5));
   DateTime lastWatered = DateTime.now().subtract(Duration(days: 5));
   bool attacked;
 
   Plant({
+    required this.userId,
     required this.attacked,
     required this.id,
-    required this.imagePath,
     required this.plantInfo
   }) {
     nextWateringDate = getNextWateringDayDate(plantInfo);
@@ -85,6 +85,6 @@ class Plant {
 
   @override
   String toString() {
-    return 'Plant{id: $id, imagePath: $imagePath, plantInfo: $plantInfo, nextWateringDate: $nextWateringDate, lastWatered: $lastWatered, attacked: $attacked}';
+    return 'Plant{id: $id, plantInfo: $plantInfo, nextWateringDate: $nextWateringDate, lastWatered: $lastWatered, attacked: $attacked}';
   }
 }
