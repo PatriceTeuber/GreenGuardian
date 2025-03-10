@@ -38,6 +38,7 @@ class Shop extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shop'),
+        automaticallyImplyLeading: false, // Entfernt den Standard-Zurück-Pfeil
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),

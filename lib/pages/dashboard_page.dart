@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../models/plant.dart';
 import '../services/GameStateProvider.dart';
 import '../services/PlantProvider.dart';
+import 'login.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -19,6 +20,35 @@ class DashboardPageState extends State<DashboardPage> {
 
   }
 
+  void _showLogoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Abmelden"),
+        content: const Text("Möchten Sie sich wirklich abmelden?"),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(ctx).pop(); // Dialog schließen, Abbrechen
+            },
+            child: const Text("Abbrechen"),
+          ),
+          TextButton(
+            onPressed: () {
+              // Hier z. B. deine Logout-Logik (Provider oder ähnliches)
+              Navigator.of(ctx).pop(); // Dialog schließen
+              Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginScreen()),
+              );
+            },
+            child: const Text("Ja"),
+          ),
+        ],
+      ),
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameStateProvider>(context);
@@ -27,6 +57,13 @@ class DashboardPageState extends State<DashboardPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Dashboard"),
+        automaticallyImplyLeading: false,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.exit_to_app),
+            onPressed: () => _showLogoutDialog(context),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),

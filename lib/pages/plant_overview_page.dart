@@ -15,6 +15,7 @@ class PlantOverviewPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Meine Pflanzen'),
+        automaticallyImplyLeading: false, // Entfernt den Standard-Zurück-Pfeil
       ),
       body: LayoutBuilder(
         builder: (context, constraints) {
