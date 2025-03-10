@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:green_guardian/pages/home_screen.dart';
+import 'package:green_guardian/pages/login.dart';
 import 'package:green_guardian/services/GameStateProvider.dart';
 import 'package:green_guardian/services/PlantProvider.dart';
+import 'package:green_guardian/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -10,7 +11,8 @@ Future<void> main() async {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => PlantProvider()),
-      ChangeNotifierProvider(create: (_) => GameStateProvider())
+      ChangeNotifierProvider(create: (_) => GameStateProvider()),
+      ChangeNotifierProvider(create: (_) => AuthProvider()),
     ],
     child: MyApp(),
   ),);
@@ -33,7 +35,7 @@ class MyApp extends StatelessWidget {
         ),
         // Hier kannst du auch globale TextStyles, ButtonThemes etc. definieren.
       ),
-      home: const HomeScreen(),
+      home: const LoginScreen(),
       debugShowCheckedModeBanner: false,
     );
   }
