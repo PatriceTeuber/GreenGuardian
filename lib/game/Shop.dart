@@ -4,7 +4,9 @@ import 'package:green_guardian/game/entities/items/BerryItem.dart';
 import 'package:green_guardian/game/entities/items/BombItem.dart';
 import 'package:green_guardian/game/entities/items/HealthPotionItem.dart';
 import 'package:green_guardian/game/entities/items/Item.dart';
+import 'package:provider/provider.dart';
 
+import '../services/GameStateProvider.dart';
 import 'PlantGame.dart';
 import 'entities/items/IceSpellItem.dart';
 import 'entities/items/WindSpell.dart';
@@ -25,6 +27,8 @@ class Shop extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final gameState = Provider.of<GameStateProvider>(context);
+
     final screenSize = MediaQuery.of(context).size;
     // Beispiel: Jede Karte soll 30% der Bildschirmhöhe einnehmen
     final double cardHeight = screenSize.height * 0.4;
@@ -38,6 +42,12 @@ class Shop extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Shop'),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: Center(child: Text('Währung: ${plantGame.currency}', style: TextStyle(fontSize: 20))),
+          ),
+        ],
         automaticallyImplyLeading: false, // Entfernt den Standard-Zurück-Pfeil
       ),
       body: Padding(
@@ -84,6 +94,7 @@ class Shop extends StatelessWidget {
                       onPressed: () {
                         if (plantGame.currency >= item.price) {
                           plantGame.currency -= item.price;
+                          gameState.updateCurrency(plantGame.currency);
                           plantGame.inventory.add(item);
                           print("Kauf erfolgt!: ${item.name}");
                         } else {

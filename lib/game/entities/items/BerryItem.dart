@@ -7,7 +7,7 @@ class BerryItem extends Item {
     String name = "Beere",
     String assetPath = "assets/images/items/Berry.png",
     double value = 10,
-    int price = 20,
+    int price = 100,
     String description = "Eine Beere, die bei Verzehr etwas HP wiederherstellt.",
 
   }) : super(

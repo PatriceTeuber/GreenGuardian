@@ -59,12 +59,17 @@ class DashboardPageState extends State<DashboardPage> {
         title: const Text("Dashboard"),
         automaticallyImplyLeading: false,
         actions: [
-          IconButton(
-            icon: const Icon(Icons.exit_to_app),
-            onPressed: () => _showLogoutDialog(context),
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0, right: 16.0),
+            child: ElevatedButton.icon(
+              onPressed: () => _showLogoutDialog(context),
+              icon: const Icon(Icons.exit_to_app),
+              label: const Text('Ausloggen'),
+            ),
           ),
         ],
       ),
+
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -116,32 +121,46 @@ class DashboardPageState extends State<DashboardPage> {
                       style: Theme.of(context).textTheme.titleLarge,
                     ),
                     const SizedBox(height: 8.0),
-                    ListView.builder(
-                      padding: const EdgeInsets.all(8.0),
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      itemCount: plants.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        final plant = plants[index];
-                        return ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(Icons.local_florist, color: Colors.green),
-                          title: Text(plant.plantInfo.name),
-                          subtitle: Text("${plant.getDaysUntilWatering()} Tage bis zum nächsten Gießen"),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.opacity, color: Colors.blueAccent),
-                            onPressed: () {
-                              // Beispiel: Pflanze gießen (hier könnte auch ein Provider-Aufruf erfolgen)
-                            },
+                    // Überprüfe, ob Pflanzen vorhanden sind:
+                    if (plants.isEmpty)
+                      Center(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16.0),
+                          child: Text(
+                            "Es konnten keine Pflanzendaten gefunden werden",
+                            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                            textAlign: TextAlign.center,
                           ),
-                        );
-                      },
-                    ),
+                        ),
+                      )
+                    else
+                      ListView.builder(
+                        padding: const EdgeInsets.all(8.0),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: plants.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          final plant = plants[index];
+                          return ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: const Icon(Icons.local_florist, color: Colors.green),
+                            title: Text(plant.plantInfo.name),
+                            subtitle: Text("${plant.getDaysUntilWatering()} Tage bis zum nächsten Gießen"),
+                            trailing: IconButton(
+                              icon: const Icon(Icons.opacity, color: Colors.blueAccent),
+                              onPressed: () {
+                                // Beispiel: Pflanze gießen (hier könnte auch ein Provider-Aufruf erfolgen)
+                              },
+                            ),
+                          );
+                        },
+                      ),
                     const Divider(),
                   ],
                 ),
               ),
             ),
+
             // Weitere Cards (z.B. Boss-Kampf, Lebens-Status) hier einbauen...
           ],
         ),

@@ -17,7 +17,18 @@ class PlantOverviewPage extends StatelessWidget {
         title: const Text('Meine Pflanzen'),
         automaticallyImplyLeading: false, // Entfernt den Standard-Zurück-Pfeil
       ),
-      body: LayoutBuilder(
+      body: plants.isEmpty
+          ? Center(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 16.0),
+          child: Text(
+            "Es konnten keine Pflanzendaten gefunden werden",
+            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      )
+          : LayoutBuilder(
         builder: (context, constraints) {
           int crossAxisCount = kIsWeb ? (constraints.maxWidth < 600 ? 1 : 4) : 1;
           return GridView.builder(
@@ -41,6 +52,7 @@ class PlantOverviewPage extends StatelessWidget {
           );
         },
       ),
+
     );
   }
 }

@@ -18,7 +18,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 1;
+  int _selectedIndex = 0;
   late OpenAIPlantService service;
   late final PlantGame plantGame;
   late List<Widget> _pages = [];
@@ -119,6 +119,16 @@ class _HomeScreenState extends State<HomeScreen> {
     // Zugriff auf den Provider hier, wenn benötigt:
     final plants = Provider.of<PlantProvider>(context).plants;
     final gameState = Provider.of<GameStateProvider>(context);
+
+    // Falls die _pages noch nicht initialisiert wurden, zeige einen Ladeindikator
+    if (_pages.isEmpty) {
+      return Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
 
     return Scaffold(
       body: _pages[_selectedIndex],

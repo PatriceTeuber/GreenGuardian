@@ -30,7 +30,7 @@ class PlantGame extends FlameGame {
   final PlantProvider plantProvider;
   double playerHealth = 100;
   double maxPlayerHealth = 100;
-  int currency = 1000;
+  int currency = 10000;
   double lastXPEarned = 0;
   double playerXP = 0;
   late BossMonster currentBoss;
