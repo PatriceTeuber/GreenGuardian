@@ -10,9 +10,10 @@ class AuthResponse {
 }
 
 class AuthProvider with ChangeNotifier {
-  String? username;
-  // Falls du ein Token erhältst, kannst du es hier speichern:
-  String? token;
+  late String _username;
+  late int _userId;
+  String get username => _username;
+  int get userId => _userId;
 
   /// Führt den Login durch und gibt ein AuthResponse zurück.
   Future<AuthResponse> login(String username, String password) async {
@@ -24,9 +25,12 @@ class AuthProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 200) {
-      this.username = username;
+      // Erwarte einen Response-Body wie: {"message": "Anmeldung erfolgreich.", "user_id": 123}
+      final Map<String, dynamic> data = json.decode(response.body);
+      _username = username;
+      _userId = data['user_id']; // Speichern der user_id im Provider
       notifyListeners();
-      return AuthResponse(success: true, message: "Anmeldung erfolgreich.");
+      return AuthResponse(success: true, message: data['message'] ?? "Anmeldung erfolgreich.");
     } else {
       // Versuche, die Fehlermeldung aus dem Response-Body zu extrahieren.
       String errorMessage = response.body;
@@ -41,6 +45,7 @@ class AuthProvider with ChangeNotifier {
       return AuthResponse(success: false, message: errorMessage);
     }
   }
+
 
   /// Führt die Registrierung durch und gibt ein AuthResponse zurück.
   Future<AuthResponse> register(String username, String password) async {

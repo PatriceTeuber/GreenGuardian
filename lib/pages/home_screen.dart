@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:green_guardian/models/plant.dart';
+import 'package:green_guardian/services/PlantService.dart';
+import 'package:green_guardian/services/auth_provider.dart';
 import 'package:provider/provider.dart';
-import '../services/GameStateProvider.dart';
 import '../services/OpenAIPlantService.dart';
 import '../services/PlantProvider.dart';
 import '../game/PlantGame.dart';
@@ -19,7 +20,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  late OpenAIPlantService service;
+  late OpenAIPlantService openAIPlantService;
+  late PlantService plantService;
+  late AuthProvider authProvider;
   late final PlantGame plantGame;
   late List<Widget> _pages = [];
 
@@ -75,16 +78,40 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               child: Text('Suchen'),
               onPressed: () {
-                // Schließe den Dialog.
+                // Dialog schließen
                 Navigator.of(dialogContext).pop();
-                // Nutze den gespeicherten Eltern-Kontext für den Provider-Zugriff.
-                service.getPlantInfo(plantName).then((plantInfo) {
-                  Provider.of<PlantProvider>(parentContext, listen: false)
-                      .addPlant(Plant(
-                    id: 1,
-                    userId: 1,
-                    plantInfo: plantInfo, attacked: false,
-                  ));
+
+                openAIPlantService.getPlantInfo(plantName).then((plantInfo) {
+                  // Pflanze zur Datenbank hinzufügen
+                  plantService
+                      .addPlant(
+                          userId: authProvider.userId, plantData: Plant(
+                    id: 0, //Dummy-Wert
+                    userId: authProvider.userId,
+                    attacked: false,
+                    plantInfo: plantInfo,
+                  ))
+                      .then((success) {
+                    if (success) {
+                      // Nach erfolgreichem Hinzufügen: Alle Pflanzen dieses Users abrufen
+                      plantService
+                          .getAllPlants(userId: authProvider.userId)
+                          .then((plantsData) {
+                            print(plantsData);
+                        // Umwandeln der JSON-Daten in Plant-Objekte
+                        final List<Plant> plants = plantsData
+                            .map((json) => Plant.fromJson(json))
+                            .toList();
+                        // Aktualisieren des Providers mit der neuen Liste
+                        Provider.of<PlantProvider>(parentContext, listen: false)
+                            .setPlants(plants);
+                      }).catchError((error) {
+                        print("Fehler beim Abrufen der Pflanzen: $error");
+                      });
+                    }
+                  }).catchError((error) {
+                    print("Fehler beim Hinzufügen der Pflanze: $error");
+                  });
                 }).catchError((error) {
                   print("Fehler: $error");
                 });
@@ -99,8 +126,23 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    openAIPlantService = OpenAIPlantService();
+    plantService = PlantService();
+    authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Lade die vorhandenen Pflanzen des angemeldeten Users und aktualisiere den Provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final plantProvider = Provider.of<PlantProvider>(context, listen: false);
+      plantService.getAllPlants(userId: authProvider.userId).then((plantsData) {
+        final List<Plant> plants = plantsData
+            .map((json) => Plant.fromJson(json))
+            .toList();
+        plantProvider.setPlants(plants);
+      }).catchError((error) {
+        print("Fehler beim Abrufen der Pflanzen: $error");
+      });
+
+      // Initialisiere hier auch deinen PlantGame und deine Seiten
       setState(() {
         plantGame = PlantGame(plantProvider: plantProvider, gameContext: context);
         _pages = [
@@ -111,15 +153,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ];
       });
     });
-    service = OpenAIPlantService();
   }
 
   @override
   Widget build(BuildContext context) {
-    // Zugriff auf den Provider hier, wenn benötigt:
-    final plants = Provider.of<PlantProvider>(context).plants;
-    final gameState = Provider.of<GameStateProvider>(context);
-
     // Falls die _pages noch nicht initialisiert wurden, zeige einen Ladeindikator
     if (_pages.isEmpty) {
       return Scaffold(
@@ -128,7 +165,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     }
-
 
     return Scaffold(
       body: _pages[_selectedIndex],

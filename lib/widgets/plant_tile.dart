@@ -21,7 +21,7 @@ class PlantTile extends StatelessWidget {
         child: Column(
           children: [
             Expanded(
-              flex: 2,
+              flex: 1,
               child: ClipRRect(
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(16.0)),
                 child: Container(

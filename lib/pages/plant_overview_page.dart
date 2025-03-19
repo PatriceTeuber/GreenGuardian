@@ -1,7 +1,8 @@
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:green_guardian/services/PlantService.dart';
 import 'package:provider/provider.dart';
-import '../models/plant.dart';
+import '../services/auth_provider.dart';
 import '../widgets/plant_tile.dart';
 import '../services/PlantProvider.dart';
 
@@ -10,6 +11,10 @@ class PlantOverviewPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final plantService = PlantService();
+    final plantProvider = Provider.of<PlantProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     // Zugriff auf die globale Pflanzenliste über den Provider
     final plants = Provider.of<PlantProvider>(context).plants;
     return Scaffold(
@@ -45,14 +50,14 @@ class PlantOverviewPage extends StatelessWidget {
               return PlantTile(
                 plant: plant,
                 onWater: () {
-                  Provider.of<PlantProvider>(context, listen: false).waterPlant(plant);
+                  plantProvider.waterPlant(plant);
+                  plantService.updateAllPlants(userId: authProvider.userId, plants: plantProvider.plants);
                 },
               );
             },
           );
         },
       ),
-
     );
   }
 }

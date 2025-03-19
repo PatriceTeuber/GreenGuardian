@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import '../models/plant.dart';
 import '../services/GameStateProvider.dart';
 import '../services/PlantProvider.dart';
+import '../services/PlantService.dart';
+import '../services/auth_provider.dart';
 import 'login.dart';
 
 class DashboardPage extends StatefulWidget {
@@ -53,6 +55,9 @@ class DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameStateProvider>(context);
     final List<Plant> plants = Provider.of<PlantProvider>(context).plants;
+    final plantService = PlantService();
+    final plantProvider = Provider.of<PlantProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
       appBar: AppBar(
@@ -149,7 +154,8 @@ class DashboardPageState extends State<DashboardPage> {
                             trailing: IconButton(
                               icon: const Icon(Icons.opacity, color: Colors.blueAccent),
                               onPressed: () {
-                                // Beispiel: Pflanze gießen (hier könnte auch ein Provider-Aufruf erfolgen)
+                                plantProvider.waterPlant(plant);
+                                plantService.updateAllPlants(userId: authProvider.userId, plants: plantProvider.plants);
                               },
                             ),
                           );

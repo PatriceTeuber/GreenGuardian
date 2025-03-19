@@ -17,6 +17,56 @@ class Plant {
     nextWateringDate = getNextWateringDayDate(plantInfo);
   }
 
+  factory Plant.fromJson(Map<String, dynamic> json) {
+    final plantInfo = PlantInfo.fromJson({
+      'name': json['name'],
+      'type': json['type'],
+      'wateringDays': List<String>.from(json['watering_days']),
+      'location': json['location'],
+    });
+
+    // Erstelle das Plant-Objekt.
+    Plant plant = Plant(
+      id: json['id'] as int,
+      userId: json['user_id'] as int,
+      attacked: json['attacked'] as bool,
+      plantInfo: plantInfo,
+    );
+
+    // Überschreibe lastWatered und nextWateringDate mit den Werten aus der JSON-Antwort.
+    plant.lastWatered = DateTime.parse(json['last_watered'] as String);
+    plant.nextWateringDate = DateTime.parse(json['next_watering_date'] as String);
+    return plant;
+  }
+
+  Map<String, dynamic> toJsonReduced() {
+    return {
+      'attacked': attacked,
+      'last_watered': lastWatered.toIso8601String(),
+      'next_watering_date': nextWateringDate.toIso8601String(),
+      'name': plantInfo.name,
+      'type': plantInfo.type,
+      'watering_days': plantInfo.wateringDays,
+      'location': plantInfo.location,
+    };
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'user_id': userId,
+      'attacked': attacked,
+      'last_watered': lastWatered.toIso8601String(),
+      'next_watering_date': nextWateringDate.toIso8601String(),
+      'name': plantInfo.name,
+      'type': plantInfo.type,
+      'watering_days': plantInfo.wateringDays,
+      'location': plantInfo.location,
+    };
+  }
+
+
+
   int getDaysUntilWatering() {
     DateTime now = DateTime.now();
     if (nextWateringDate.isAfter(now)) {

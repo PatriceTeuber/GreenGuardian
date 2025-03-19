@@ -19,6 +19,8 @@ class PlantInfo {
   factory PlantInfo.fromJson(Map<String, dynamic> json) =>
       _$PlantInfoFromJson(json);
 
+  Map<String, dynamic> toJson() => _$PlantInfoToJson(this);
+
   @override
   String toString() {
     return 'PlantInfo{name: $name, type: $type, wateringDays: $wateringDays, location: $location}';
