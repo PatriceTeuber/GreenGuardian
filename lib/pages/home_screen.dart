@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:green_guardian/models/plant.dart';
+import 'package:green_guardian/services/GameService.dart';
+import 'package:green_guardian/services/GameStateProvider.dart';
 import 'package:green_guardian/services/PlantService.dart';
 import 'package:green_guardian/services/auth_provider.dart';
 import 'package:provider/provider.dart';
+import '../models/gameData.dart';
 import '../services/OpenAIPlantService.dart';
 import '../services/PlantProvider.dart';
 import '../game/PlantGame.dart';
@@ -22,7 +25,9 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
   late OpenAIPlantService openAIPlantService;
   late PlantService plantService;
+  late GameService gameService;
   late AuthProvider authProvider;
+  late GameStateProvider gameStateProvider;
   late final PlantGame plantGame;
   late List<Widget> _pages = [];
 
@@ -129,6 +134,8 @@ class _HomeScreenState extends State<HomeScreen> {
     openAIPlantService = OpenAIPlantService();
     plantService = PlantService();
     authProvider = Provider.of<AuthProvider>(context, listen: false);
+    gameStateProvider = Provider.of<GameStateProvider>(context, listen: false);
+    gameService = GameService();
 
     // Lade die vorhandenen Pflanzen des angemeldeten Users und aktualisiere den Provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -140,6 +147,14 @@ class _HomeScreenState extends State<HomeScreen> {
         plantProvider.setPlants(plants);
       }).catchError((error) {
         print("Fehler beim Abrufen der Pflanzen: $error");
+      });
+
+      // Spielstand vom Backend abrufen
+      gameService.getGameData(userId: authProvider.userId).then((gameData) {
+        final gameStateData = GameData.fromJson(gameData);
+        gameStateProvider.setGameData(gameStateData);
+      }).catchError((error) {
+        print("Fehler beim Abrufen der Speildaten: $error");
       });
 
       // Initialisiere hier auch deinen PlantGame und deine Seiten

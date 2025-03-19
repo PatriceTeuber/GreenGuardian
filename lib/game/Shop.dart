@@ -6,7 +6,9 @@ import 'package:green_guardian/game/entities/items/HealthPotionItem.dart';
 import 'package:green_guardian/game/entities/items/Item.dart';
 import 'package:provider/provider.dart';
 
+import '../services/GameService.dart';
 import '../services/GameStateProvider.dart';
+import '../services/auth_provider.dart';
 import 'PlantGame.dart';
 import 'entities/items/IceSpellItem.dart';
 import 'entities/items/WindSpell.dart';
@@ -97,6 +99,15 @@ class Shop extends StatelessWidget {
                           gameState.updateCurrency(plantGame.currency);
                           plantGame.inventory.add(item);
                           print("Kauf erfolgt!: ${item.name}");
+
+                          // Backend aktualisieren
+                          final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                          GameService gameService = GameService();
+                          final gameData = Provider.of<GameStateProvider>(context, listen: false).currentGameData;
+                          gameService.addOrUpdateGameData(
+                            userId: authProvider.userId,
+                            gameData: gameData.toJson(),
+                          );
                         } else {
                           print("Geld reicht nicht mehr! ${plantGame.currency}");
                         }

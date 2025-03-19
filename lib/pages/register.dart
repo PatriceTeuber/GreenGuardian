@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:green_guardian/services/GameStateProvider.dart';
 import 'package:provider/provider.dart';
 import 'package:green_guardian/services/auth_provider.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../services/GameService.dart';
 import 'login.dart';
 
 class RegisterScreen extends StatefulWidget {
-  const RegisterScreen({Key? key}) : super(key: key);
+  const RegisterScreen({super.key});
 
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
@@ -28,6 +30,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final gameStateProvider = Provider.of<GameStateProvider>(context, listen: false);
+      final GameService gameService = GameService();
       final result = await authProvider.register(_username, _password);
 
       setState(() {
@@ -35,6 +39,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       });
 
       if (result.success) {
+        //GameState für den Nutzer anlegen
+        final initialGameData = gameStateProvider.currentGameData.toJson();
+        gameService.addOrUpdateGameData(userId: authProvider.userId, gameData: initialGameData);
+
         // Navigiere zur Login-Seite
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(builder: (context) => const LoginScreen()),

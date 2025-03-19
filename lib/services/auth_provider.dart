@@ -28,7 +28,7 @@ class AuthProvider with ChangeNotifier {
       // Erwarte einen Response-Body wie: {"message": "Anmeldung erfolgreich.", "user_id": 123}
       final Map<String, dynamic> data = json.decode(response.body);
       _username = username;
-      _userId = data['user_id']; // Speichern der user_id im Provider
+      _userId = data['user_id'];
       notifyListeners();
       return AuthResponse(success: true, message: data['message'] ?? "Anmeldung erfolgreich.");
     } else {
@@ -57,6 +57,8 @@ class AuthProvider with ChangeNotifier {
     );
 
     if (response.statusCode == 201) {
+      final Map<String, dynamic> data = json.decode(response.body);
+      _userId = data['user_id'];
       return AuthResponse(success: true, message: "Benutzer erfolgreich registriert.");
     } else {
       String errorMessage = response.body;

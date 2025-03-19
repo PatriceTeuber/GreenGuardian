@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
+import '../models/gameData.dart';
+
 class GameStateProvider with ChangeNotifier {
+
   double _playerHealth = 100;
   double _maxPlayerHealth = 100;
   int _currency = 1000;
@@ -12,6 +15,23 @@ class GameStateProvider with ChangeNotifier {
   double get playerXP => _playerXP;
   double get bossHealth => _bossHealth;
   double get maxPlayerHealth => _maxPlayerHealth;
+
+  GameData get currentGameData => GameData(
+    playerHealth: _playerHealth,
+    maxPlayerHealth: _maxPlayerHealth,
+    currency: _currency,
+    playerXP: _playerXP,
+    bossHealth: _bossHealth,
+  );
+
+  void setGameData(GameData newData) {
+    _playerHealth = newData.playerHealth;
+    _maxPlayerHealth = newData.maxPlayerHealth;
+    _currency = newData.currency;
+    _playerXP = newData.playerXP;
+    _bossHealth = newData.bossHealth;
+    notifyListeners();
+  }
 
   void updatePlayerHealth(double newHealth) {
     _playerHealth = newHealth;

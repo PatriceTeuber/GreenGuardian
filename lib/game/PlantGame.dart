@@ -19,8 +19,10 @@ import 'package:green_guardian/game/entities/effects/HealEffect.dart';
 import 'package:green_guardian/models/plant.dart';
 import 'package:provider/provider.dart';
 
+import '../services/GameService.dart';
 import '../services/GameStateProvider.dart';
 import '../services/PlantProvider.dart';
+import '../services/auth_provider.dart';
 import 'entities/items/Item.dart';
 import 'entities/boss/BossMonster.dart';
 
@@ -212,6 +214,14 @@ class PlantGame extends FlameGame {
     gameState.updateCurrency(currency);
     gameState.updatePlayerXP(playerXP);
     gameState.updateBossHealth(currentBoss.health.toDouble());
+
+    final authProvider = Provider.of<AuthProvider>(gameContext, listen: false);
+    GameService gameService = GameService();
+    final gameData = Provider.of<GameStateProvider>(gameContext, listen: false).currentGameData;
+    gameService.addOrUpdateGameData(
+      userId: authProvider.userId,
+      gameData: gameData.toJson(),
+    );
   }
 
 
