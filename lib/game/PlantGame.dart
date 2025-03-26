@@ -216,6 +216,21 @@ class PlantGame extends FlameGame {
     gameState.updateBossHealth(currentBoss.health.toDouble());
   }
 
+  @override
+  void onGameResize(Vector2 size) {
+    super.onGameResize(size);
+    // Beispiel: Neuberechnung der Positionswerte
+    final isLandscape = size.x > size.y;
+
+    // Passe hier dynamisch Parameter an:
+    // - Offset-Werte für Boss und HealthBars
+    // - Skalierungsfaktoren etc.
+
+    // Zum Beispiel:
+    bossHealthBar.position = Vector2(size.x * 0.5, isLandscape ? 20 : 60);
+    playerHealthBar.position = Vector2(20, isLandscape ? 20 : 60);
+  }
+
 
   Future<void> loadSounds() async {
     await FlameAudio.audioCache.load('heal.mp3');
