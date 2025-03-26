@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import '../models/plant.dart';
 
 class PlantService {
-  final String baseUrl = "https://lkkbee3vea.execute-api.us-east-1.amazonaws.com/1/plant";
+  final String baseUrl = "https://674ykbftq6.execute-api.us-east-1.amazonaws.com/1/plant";
 
   PlantService();
 

@@ -17,7 +17,7 @@ class AuthProvider with ChangeNotifier {
 
   /// Führt den Login durch und gibt ein AuthResponse zurück.
   Future<AuthResponse> login(String username, String password) async {
-    final url = Uri.parse("https://lkkbee3vea.execute-api.us-east-1.amazonaws.com/1/user/login");
+    final url = Uri.parse("https://674ykbftq6.execute-api.us-east-1.amazonaws.com/1/user/login");
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -49,7 +49,7 @@ class AuthProvider with ChangeNotifier {
 
   /// Führt die Registrierung durch und gibt ein AuthResponse zurück.
   Future<AuthResponse> register(String username, String password) async {
-    final url = Uri.parse("https://lkkbee3vea.execute-api.us-east-1.amazonaws.com/1/user/register");
+    final url = Uri.parse("https://674ykbftq6.execute-api.us-east-1.amazonaws.com/1/user/register");
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
