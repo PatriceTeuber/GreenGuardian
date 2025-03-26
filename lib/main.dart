@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:green_guardian/pages/login.dart';
+import 'package:green_guardian/services/GameLifecycleHandler.dart';
 import 'package:green_guardian/services/GameStateProvider.dart';
 import 'package:green_guardian/services/PlantProvider.dart';
 import 'package:green_guardian/services/auth_provider.dart';
@@ -14,7 +15,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_) => GameStateProvider()),
       ChangeNotifierProvider(create: (_) => AuthProvider()),
     ],
-    child: MyApp(),
+    child: GameLifecycleHandler(child: MyApp()),
   ),);
 }
 

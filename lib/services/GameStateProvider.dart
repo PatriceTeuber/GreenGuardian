@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:green_guardian/game/entities/items/Item.dart';
 
 import '../models/gameData.dart';
 
@@ -9,6 +10,7 @@ class GameStateProvider with ChangeNotifier {
   int _currency = 1000;
   double _playerXP = 0;
   double _bossHealth = 100;
+  List<Item> _items = [];
 
   double get playerHealth => _playerHealth;
   int get currency => _currency;
@@ -21,7 +23,7 @@ class GameStateProvider with ChangeNotifier {
     maxPlayerHealth: _maxPlayerHealth,
     currency: _currency,
     playerXP: _playerXP,
-    bossHealth: _bossHealth,
+    bossHealth: _bossHealth, items: _items,
   );
 
   void setGameData(GameData newData) {
@@ -30,6 +32,7 @@ class GameStateProvider with ChangeNotifier {
     _currency = newData.currency;
     _playerXP = newData.playerXP;
     _bossHealth = newData.bossHealth;
+    _items = newData.items;
     notifyListeners();
   }
 

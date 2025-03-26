@@ -5,4 +5,6 @@ flutter pub run build_runner build
 Pflanzen Bild
 Fehlerbehebung
 
- 
+ TODO:
+ - Responsive Web / Querformat
+ - Items werden nicht gespeichert

@@ -1,7 +1,12 @@
+import 'package:json_annotation/json_annotation.dart';
+
+part 'Item.g.dart';
+
+@JsonSerializable()
 class Item {
   final String name;
   final String assetPath;
-  final String effect; // z. B. "Heilt" oder "Boss-Schaden"
+  final String effect;
   final double value;
   final int price;
   final String description;
@@ -16,4 +21,8 @@ class Item {
     required this.effect,
     required this.value,
   });
+
+  factory Item.fromJson(Map<String, dynamic> json) => _$ItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ItemToJson(this);
 }
