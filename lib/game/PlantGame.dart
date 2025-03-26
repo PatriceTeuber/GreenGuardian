@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flame/game.dart';
 import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:green_guardian/game/entities/boss/Crow.dart';
 import 'package:green_guardian/game/entities/boss/FireDemon.dart';
 import 'package:green_guardian/game/entities/effects/IceSpellEffect.dart';
@@ -19,15 +20,15 @@ import 'package:green_guardian/game/entities/effects/HealEffect.dart';
 import 'package:green_guardian/models/plant.dart';
 import 'package:provider/provider.dart';
 
-import '../services/GameService.dart';
 import '../services/GameStateProvider.dart';
 import '../services/PlantProvider.dart';
-import '../services/auth_provider.dart';
 import 'entities/items/Item.dart';
 import 'entities/boss/BossMonster.dart';
 
 
 class PlantGame extends FlameGame {
+
+  bool _loaded = false;
 
   final PlantProvider plantProvider;
   double playerHealth = 100;
@@ -94,6 +95,7 @@ class PlantGame extends FlameGame {
       BerryItem(),
     ]);
 
+    _loaded = true;
   }
 
   // Überprüft, ob alle Pflanzen rechtzeitig gegossen wurden.
@@ -209,16 +211,21 @@ class PlantGame extends FlameGame {
       destroyEffectList.remove(effect);
     }
 
-    final gameState = Provider.of<GameStateProvider>(gameContext, listen: false);
-    gameState.updatePlayerHealth(playerHealth);
-    gameState.updateCurrency(currency);
-    gameState.updatePlayerXP(playerXP);
-    gameState.updateBossHealth(currentBoss.health.toDouble());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final gameState = Provider.of<GameStateProvider>(gameContext, listen: false);
+      gameState.updatePlayerHealth(playerHealth);
+      gameState.updateCurrency(currency);
+      gameState.updatePlayerXP(playerXP);
+      gameState.updateBossHealth(currentBoss.health.toDouble());
+    });
   }
 
   @override
   void onGameResize(Vector2 size) {
     super.onGameResize(size);
+
+    if (!_loaded) return;
+
     // Beispiel: Neuberechnung der Positionswerte
     final isLandscape = size.x > size.y;
 
@@ -226,9 +233,35 @@ class PlantGame extends FlameGame {
     // - Offset-Werte für Boss und HealthBars
     // - Skalierungsfaktoren etc.
 
-    // Zum Beispiel:
-    bossHealthBar.position = Vector2(size.x * 0.5, isLandscape ? 20 : 60);
-    playerHealthBar.position = Vector2(20, isLandscape ? 20 : 60);
+    if (kIsWeb) {
+      const double spacing = 20.0; // Abstand zwischen den Healthbars
+      const double topMargin = 50.0; // Abstand vom oberen Rand
+      const double leftMargin = 20.0; // Abstand vom linken Rand
+
+      // Setze die Position der Player-Healthbar
+      playerHealthBar.position = Vector2(leftMargin, topMargin);
+
+      // Berechne die Position der Boss-Healthbar rechts neben der Player-Healthbar
+      bossHealthBar.position = Vector2(
+        leftMargin + playerHealthBar.size.x + spacing,
+        topMargin,
+      );
+
+      currentBoss.scale = Vector2.all(1.5);
+      currentBoss.position = Vector2(size.x / 3, size.y / 2);
+
+    } else {
+      if (isLandscape) {
+        currentBoss.scale = Vector2.all(1.5);
+        currentBoss.position = Vector2(size.x / 3, size.y / 6);
+        bossHealthBar.position = Vector2(currentBoss.labelXOffset, currentBoss.labelYOffset);
+      } else {
+        currentBoss.scale = bossBlueprint.scale;
+        currentBoss.position = bossBlueprint.position;
+        // Hier fehlt aktuell die Neupositionierung der bossHealthBar im Hochformat:
+        bossHealthBar.position = Vector2(20, 60); // Beispielwert – anpassen wie gewünscht
+      }
+    }
   }
 
 
