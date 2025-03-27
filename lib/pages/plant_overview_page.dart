@@ -42,7 +42,7 @@ class PlantOverviewPage extends StatelessWidget {
               crossAxisCount: crossAxisCount,
               crossAxisSpacing: 8.0,
               mainAxisSpacing: 8.0,
-              childAspectRatio: 0.7,
+              childAspectRatio: 1,
             ),
             itemCount: plants.length,
             itemBuilder: (context, index) {

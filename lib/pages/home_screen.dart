@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:green_guardian/models/plant.dart';
 import 'package:green_guardian/services/GameService.dart';
 import 'package:green_guardian/services/GameStateProvider.dart';
@@ -37,28 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  void _onAddPlant() {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Wrap(
-            children: <Widget>[
-              ListTile(
-                leading: Icon(Icons.text_fields),
-                title: Text('Mit Pflanzennamen suchen'),
-                onTap: () {
-                  Navigator.pop(context);
-                  _showPlantNameInputDialog();
-                },
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
   void _showPlantNameInputDialog() {
     // Speichere den Eltern-Kontext (aus HomeScreen) in einer Variablen.
     final parentContext = context;
@@ -67,14 +46,45 @@ class _HomeScreenState extends State<HomeScreen> {
       context: parentContext,
       builder: (dialogContext) {
         String plantName = '';
+        final _formKey = GlobalKey<FormState>();
+
         return AlertDialog(
-          title: Text('Pflanzenname eingeben'),
-          content: TextField(
-            onChanged: (value) {
-              plantName = value;
-            },
-            decoration: InputDecoration(hintText: "Name der Pflanze"),
+          title: Text('Neue Pflanze hinzufügen'),
+          content: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    color: Colors.blue[50],
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Text(
+                    "Gib den Namen deiner Pflanze ein. Unsere generative KI erstellt daraufhin einen individuellen Gießplan und liefert dir wertvolle Pflegetipps.",
+                    style: TextStyle(fontSize: 14, color: Colors.blue[800]),
+                  ),
+                ),
+                SizedBox(height: 8),
+                TextFormField(
+                  onChanged: (value) {
+                    plantName = value;
+                  },
+                  validator: (value) {
+                    if (value == null || value.trim().isEmpty) {
+                      return 'Bitte gib einen Pflanzennamen ein.';
+                    }
+                    return null;
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Name der Pflanze hier eingeben",
+                  ),
+                ),
+              ],
+            ),
           ),
+
           actions: [
             TextButton(
               child: Text('Abbrechen'),
@@ -83,26 +93,27 @@ class _HomeScreenState extends State<HomeScreen> {
             TextButton(
               child: Text('Suchen'),
               onPressed: () {
-                // Dialog schließen
+                if (!_formKey.currentState!.validate()) return;
                 Navigator.of(dialogContext).pop();
 
                 openAIPlantService.getPlantInfo(plantName).then((plantInfo) {
                   // Pflanze zur Datenbank hinzufügen
                   plantService
                       .addPlant(
-                          userId: authProvider.userId, plantData: Plant(
-                    id: 0, //Dummy-Wert
-                    userId: authProvider.userId,
-                    attacked: false,
-                    plantInfo: plantInfo,
-                  ))
+                      userId: authProvider.userId,
+                      plantData: Plant(
+                        id: 0, // Dummy-Wert
+                        userId: authProvider.userId,
+                        attacked: false,
+                        plantInfo: plantInfo,
+                      ))
                       .then((success) {
                     if (success) {
                       // Nach erfolgreichem Hinzufügen: Alle Pflanzen dieses Users abrufen
                       plantService
                           .getAllPlants(userId: authProvider.userId)
                           .then((plantsData) {
-                            print(plantsData);
+                        print(plantsData);
                         // Umwandeln der JSON-Daten in Plant-Objekte
                         final List<Plant> plants = plantsData
                             .map((json) => Plant.fromJson(json))
@@ -110,15 +121,51 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Aktualisieren des Providers mit der neuen Liste
                         Provider.of<PlantProvider>(parentContext, listen: false)
                             .setPlants(plants);
+                        // Zeige eine Erfolgsnachricht an
+                        Fluttertoast.showToast(
+                          msg: "Neue Pflanze: $plantName erfolgreich hinzugefügt!",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.green,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
                       }).catchError((error) {
                         print("Fehler beim Abrufen der Pflanzen: $error");
+                        // Zeige eine Fehlernachricht an
+                        Fluttertoast.showToast(
+                          msg: "Neue Pflanze: $plantName konnte nicht hinzugefügt werden. Versuche es erneut.",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.BOTTOM,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0,
+                        );
                       });
                     }
                   }).catchError((error) {
                     print("Fehler beim Hinzufügen der Pflanze: $error");
+                    // Zeige eine Fehlernachricht an
+                    Fluttertoast.showToast(
+                      msg: "Neue Pflanze: $plantName konnte nicht hinzugefügt werden. Versuche es erneut.",
+                      toastLength: Toast.LENGTH_SHORT,
+                      gravity: ToastGravity.BOTTOM,
+                      backgroundColor: Colors.red,
+                      textColor: Colors.white,
+                      fontSize: 16.0,
+                    );
                   });
                 }).catchError((error) {
                   print("Fehler: $error");
+                  // Zeige eine Fehlernachricht an
+                  Fluttertoast.showToast(
+                    msg: "Neue Pflanze: $plantName konnte nicht hinzugefügt werden. Versuche es erneut.",
+                    toastLength: Toast.LENGTH_SHORT,
+                    gravity: ToastGravity.BOTTOM,
+                    backgroundColor: Colors.red,
+                    textColor: Colors.white,
+                    fontSize: 16.0,
+                  );
                 });
               },
             ),
@@ -127,6 +174,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
 
   @override
   void initState() {
@@ -141,9 +189,8 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final plantProvider = Provider.of<PlantProvider>(context, listen: false);
       plantService.getAllPlants(userId: authProvider.userId).then((plantsData) {
-        final List<Plant> plants = plantsData
-            .map((json) => Plant.fromJson(json))
-            .toList();
+        final List<Plant> plants =
+            plantsData.map((json) => Plant.fromJson(json)).toList();
         plantProvider.setPlants(plants);
       }).catchError((error) {
         print("Fehler beim Abrufen der Pflanzen: $error");
@@ -159,7 +206,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
       // Initialisiere hier auch deinen PlantGame und deine Seiten
       setState(() {
-        plantGame = PlantGame(plantProvider: plantProvider, gameContext: context);
+        plantGame =
+            PlantGame(plantProvider: plantProvider, gameContext: context);
         _pages = [
           const DashboardPage(),
           const PlantOverviewPage(),
@@ -187,7 +235,7 @@ class _HomeScreenState extends State<HomeScreen> {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(32.0),
         ),
-        onPressed: _onAddPlant,
+        onPressed: _showPlantNameInputDialog,
         child: const Icon(Icons.add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
