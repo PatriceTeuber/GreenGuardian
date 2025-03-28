@@ -15,11 +15,9 @@ class DashboardPage extends StatefulWidget {
 }
 
 class DashboardPageState extends State<DashboardPage> {
-
   @override
   void initState() {
     super.initState();
-
   }
 
   void _showLogoutDialog(BuildContext context) {
@@ -37,7 +35,6 @@ class DashboardPageState extends State<DashboardPage> {
           ),
           TextButton(
             onPressed: () {
-              // Hier z. B. deine Logout-Logik (Provider oder ähnliches)
               Navigator.of(ctx).pop(); // Dialog schließen
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (context) => const LoginScreen()),
@@ -50,7 +47,6 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
     final gameState = Provider.of<GameStateProvider>(context);
@@ -58,6 +54,66 @@ class DashboardPageState extends State<DashboardPage> {
     final plantService = PlantService();
     final plantProvider = Provider.of<PlantProvider>(context, listen: false);
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
+
+    // Pflanzenpflege-Card
+    Widget plantListCard = Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "Pflanzenpflege",
+              style: Theme.of(context).textTheme.titleLarge,
+            ),
+            const SizedBox(height: 8.0),
+            if (plants.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 16.0),
+                  child: Text(
+                    "Es konnten keine Pflanzendaten gefunden werden",
+                    style: TextStyle(fontSize: 16, color: Colors.grey[600]),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )
+            else
+              ListView.builder(
+                padding: const EdgeInsets.all(8.0),
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: plants.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final plant = plants[index];
+                  return ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(Icons.local_florist, color: Colors.green),
+                    title: Text(plant.plantInfo.name),
+                    subtitle: Text(
+                        "${plant.getDaysUntilWatering()} Tage bis zum nächsten Gießen"),
+                    trailing: IconButton(
+                      icon: const Icon(Icons.opacity, color: Colors.blueAccent),
+                      onPressed: () {
+                        plantProvider.waterPlant(plant);
+                        plantService.updateAllPlants(
+                          userId: authProvider.userId,
+                          plants: plantProvider.plants,
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+            const Divider(),
+          ],
+        ),
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(
@@ -74,103 +130,118 @@ class DashboardPageState extends State<DashboardPage> {
           ),
         ],
       ),
-
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Gamification-Status Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Statistik",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8.0),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        _buildStatusItem("XP", gameState.playerXP.toStringAsFixed(0)),
-                        _buildStatusItem("Spieler HP", gameState.playerHealth.toStringAsFixed(0)),
-                        _buildStatusItem("Boss HP", gameState.bossHealth.toStringAsFixed(0)),
-                        _buildStatusItem("Währung", gameState.currency.toString()),
-                      ],
-                    ),
-                  ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            // Statistik-Card abhängig von der Breite definieren
+            Widget statisticsCard;
+            if (constraints.maxWidth > 600) {
+              // Bei breiten Bildschirmen: Werte untereinander (vertikal)
+              statisticsCard = Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
                 ),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            // Pflanzenpflege Card
-            Card(
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Pflanzenpflege",
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8.0),
-                    // Überprüfe, ob Pflanzen vorhanden sind:
-                    if (plants.isEmpty)
-                      Center(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 16.0),
-                          child: Text(
-                            "Es konnten keine Pflanzendaten gefunden werden",
-                            style: TextStyle(fontSize: 16, color: Colors.grey[600]),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                      )
-                    else
-                      ListView.builder(
-                        padding: const EdgeInsets.all(8.0),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: plants.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final plant = plants[index];
-                          return ListTile(
-                            contentPadding: EdgeInsets.zero,
-                            leading: const Icon(Icons.local_florist, color: Colors.green),
-                            title: Text(plant.plantInfo.name),
-                            subtitle: Text("${plant.getDaysUntilWatering()} Tage bis zum nächsten Gießen"),
-                            trailing: IconButton(
-                              icon: const Icon(Icons.opacity, color: Colors.blueAccent),
-                              onPressed: () {
-                                if (plantProvider.waterPlant(plant)) {
-                                  gameState.updateCurrency(gameState.currency + 35);
-                                }
-                                plantService.updateAllPlants(userId: authProvider.userId, plants: plantProvider.plants);
-                              },
-                            ),
-                          );
-                        },
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Statistik",
+                        style: Theme.of(context).textTheme.titleLarge,
                       ),
-                    const Divider(),
-                  ],
+                      const SizedBox(height: 8.0),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatusItem(
+                              "XP", gameState.playerXP.toStringAsFixed(0)),
+                          const SizedBox(height: 8.0),
+                          _buildStatusItem("Spieler HP",
+                              gameState.playerHealth.toStringAsFixed(0)),
+                          const SizedBox(height: 8.0),
+                          _buildStatusItem("Boss HP",
+                              gameState.bossHealth.toStringAsFixed(0)),
+                          const SizedBox(height: 8.0),
+                          _buildStatusItem("Währung", gameState.currency.toString()),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
+              );
+            } else {
+              // Bei schmalen Bildschirmen: Werte horizontal (Row)
+              statisticsCard = Card(
+                elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Statistik",
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                      const SizedBox(height: 8.0),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          _buildStatusItem(
+                              "XP", gameState.playerXP.toStringAsFixed(0)),
+                          _buildStatusItem("Spieler HP",
+                              gameState.playerHealth.toStringAsFixed(0)),
+                          _buildStatusItem("Boss HP",
+                              gameState.bossHealth.toStringAsFixed(0)),
+                          _buildStatusItem("Währung", gameState.currency.toString()),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
 
-            // Weitere Cards (z.B. Boss-Kampf, Lebens-Status) hier einbauen...
-          ],
+            // Gesamtlayout: Bei Breite über 600 Pixel werden die beiden Cards nebeneinander zentriert angezeigt.
+            if (constraints.maxWidth > 600) {
+              return Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 800),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Statistik: 1/3 der Breite
+                      Expanded(
+                        flex: 1,
+                        child: statisticsCard,
+                      ),
+                      const SizedBox(width: 16.0),
+                      // Pflanzenpflege: 2/3 der Breite
+                      Expanded(
+                        flex: 2,
+                        child: plantListCard,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            } else {
+              // In der mobilen Portrait-Ansicht: einfache Column-Anordnung
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  statisticsCard,
+                  const SizedBox(height: 16.0),
+                  plantListCard,
+                ],
+              );
+            }
+          },
         ),
       ),
     );
@@ -178,8 +249,12 @@ class DashboardPageState extends State<DashboardPage> {
 
   Widget _buildStatusItem(String label, String value) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+        Text(
+          value,
+          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+        ),
         const SizedBox(height: 4.0),
         Text(label),
       ],

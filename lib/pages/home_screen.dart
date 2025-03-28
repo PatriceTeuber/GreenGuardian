@@ -124,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Zeige eine Erfolgsnachricht an
                         Fluttertoast.showToast(
                           msg: "Neue Pflanze: $plantName erfolgreich hinzugefügt!",
-                          toastLength: Toast.LENGTH_SHORT,
+                          toastLength: Toast.LENGTH_LONG,
                           gravity: ToastGravity.BOTTOM,
                           backgroundColor: Colors.green,
                           textColor: Colors.white,
@@ -135,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         // Zeige eine Fehlernachricht an
                         Fluttertoast.showToast(
                           msg: "Neue Pflanze: $plantName konnte nicht hinzugefügt werden. Versuche es erneut.",
-                          toastLength: Toast.LENGTH_SHORT,
+                          toastLength: Toast.LENGTH_LONG,
                           gravity: ToastGravity.BOTTOM,
                           backgroundColor: Colors.red,
                           textColor: Colors.white,
@@ -148,7 +148,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     // Zeige eine Fehlernachricht an
                     Fluttertoast.showToast(
                       msg: "Neue Pflanze: $plantName konnte nicht hinzugefügt werden. Versuche es erneut.",
-                      toastLength: Toast.LENGTH_SHORT,
+                      toastLength: Toast.LENGTH_LONG,
                       gravity: ToastGravity.BOTTOM,
                       backgroundColor: Colors.red,
                       textColor: Colors.white,
@@ -160,7 +160,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   // Zeige eine Fehlernachricht an
                   Fluttertoast.showToast(
                     msg: "Neue Pflanze: $plantName konnte nicht hinzugefügt werden. Versuche es erneut.",
-                    toastLength: Toast.LENGTH_SHORT,
+                    toastLength: Toast.LENGTH_LONG,
                     gravity: ToastGravity.BOTTOM,
                     backgroundColor: Colors.red,
                     textColor: Colors.white,

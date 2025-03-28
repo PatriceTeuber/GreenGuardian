@@ -37,7 +37,17 @@ class PlantOverviewPage extends StatelessWidget {
       )
           : LayoutBuilder(
         builder: (context, constraints) {
-          int crossAxisCount = kIsWeb ? (constraints.maxWidth < 600 ? 1 : 4) : 1;
+          int crossAxisCount;
+          if (constraints.maxWidth < 600) {
+            // Kleine Bildschirme: 1 Karte pro Zeile
+            crossAxisCount = 1;
+          } else if (constraints.maxWidth < 1200) {
+            // Mittlere Bildschirme: 2 Karten pro Zeile
+            crossAxisCount = 2;
+          } else {
+            // Große Bildschirme: 4 Karten pro Zeile
+            crossAxisCount = 4;
+          }
           return GridView.builder(
             padding: const EdgeInsets.all(8.0),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -55,7 +65,10 @@ class PlantOverviewPage extends StatelessWidget {
                   if (plantProvider.waterPlant(plant)) {
                     gameState.updateCurrency(gameState.currency + 35);
                   }
-                  plantService.updateAllPlants(userId: authProvider.userId, plants: plantProvider.plants);
+                  plantService.updateAllPlants(
+                    userId: authProvider.userId,
+                    plants: plantProvider.plants,
+                  );
                 },
               );
             },
