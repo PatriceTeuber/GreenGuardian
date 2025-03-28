@@ -33,7 +33,7 @@ class PlantGame extends FlameGame {
   final PlantProvider plantProvider;
   double playerHealth = 100;
   double maxPlayerHealth = 100;
-  int currency = 10000;
+  int currency = 0;
   double lastXPEarned = 0;
   double playerXP = 0;
   late BossMonster currentBoss;
@@ -50,24 +50,39 @@ class PlantGame extends FlameGame {
 
   List<ItemEffect> destroyEffectList = [];
 
+
+
   PlantGame({required this.plantProvider, required this.gameContext});
 
   @override
   Future<void> onLoad() async {
 
+    final gameState = Provider.of<GameStateProvider>(gameContext, listen: false);
+
+    //Stand laden
+    print("=====================================");
+    print("=====================================");
+    print("=====================================");
+    inventory.addAll(gameState.items);
+    getSavedBoss(gameState.bossLevel, gameState.bossHealth, gameState.bossName);
+    currency = gameState.currency;
+    playerXP = gameState.playerXP;
+    playerHealth = gameState.playerHealth;
+    maxPlayerHealth = gameState.maxPlayerHealth;
+    print("=====================================");
+    print("=====================================");
+    print("=====================================");
+
     //Hintergrund
     await add(BattleBackground());
 
-    //Boss
-    currentBoss = FireDemon(level: 1);
-    bossBlueprint = currentBoss;
     add(currentBoss);
 
     await currentBoss.onLoaded;
     //Lebensanzeigen:
     bossHealthBar = HealthBar(
       currentHealth: currentBoss.health.toDouble(),
-      maxHealth: currentBoss.health,
+      maxHealth: currentBoss.maxHealth,
       position: Vector2(currentBoss.labelXOffset, currentBoss.labelYOffset),
       size: Vector2(200, 30),
       label: currentBoss.bossName
@@ -77,7 +92,7 @@ class PlantGame extends FlameGame {
     // Spieler-HealthBar
     playerHealthBar = HealthBar(
       currentHealth: playerHealth.toDouble(),
-      maxHealth: 100,
+      maxHealth: maxPlayerHealth,
       position: Vector2(20, 60),
       size: Vector2(300, 30),
       fillColor: const Color(0xFFFFFF00),
@@ -89,11 +104,6 @@ class PlantGame extends FlameGame {
     wateringCheckTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       checkWateringStatus();
     });
-
-    // Beispiel: Füge ein paar Items ins Inventar ein
-    inventory.addAll([
-      BerryItem(),
-    ]);
 
     _loaded = true;
   }
@@ -171,6 +181,24 @@ class PlantGame extends FlameGame {
     }
   }
 
+  void getSavedBoss(int bossLevel, double bossHealth, String bossName) {
+    print(bossName + " " + bossHealth.toString() + " " + bossLevel.toString());
+    if (bossName.contains("Feuerdämon")) {
+      currentBoss = FireDemon.byDatabase(level: bossLevel, health: bossHealth);
+      bossBlueprint = FireDemon(level: bossLevel);
+    } else if (bossName.contains("Eisgolem")) {
+      currentBoss = IceGolem.byDatabase(level: bossLevel, health: bossHealth);
+      bossBlueprint = IceGolem(level: bossLevel);
+    } else if (bossName.contains("Crow")) {
+      currentBoss = Crow.byDatabase(level: bossLevel, health: bossHealth);
+      bossBlueprint = Crow(level: bossLevel);
+    } else {
+      //Boss
+      currentBoss = FireDemon(level: 1);
+      bossBlueprint = currentBoss;
+    }
+  }
+
   void resetCurrentBoss() {
     // Entferne den alten Boss (falls nötig) und erstelle einen neuen
     // Beispiel: Setze currentBoss neu und aktualisiere die HealthBar
@@ -217,6 +245,8 @@ class PlantGame extends FlameGame {
       gameState.updateCurrency(currency);
       gameState.updatePlayerXP(playerXP);
       gameState.updateBossHealth(currentBoss.health.toDouble());
+      gameState.updateItmes(inventory);
+      gameState.updateBoss(currentBoss.level, currentBoss.bossName);
     });
   }
 
@@ -258,8 +288,6 @@ class PlantGame extends FlameGame {
       } else {
         currentBoss.scale = bossBlueprint.scale;
         currentBoss.position = bossBlueprint.position;
-        // Hier fehlt aktuell die Neupositionierung der bossHealthBar im Hochformat:
-        bossHealthBar.position = Vector2(20, 60); // Beispielwert – anpassen wie gewünscht
       }
     }
   }

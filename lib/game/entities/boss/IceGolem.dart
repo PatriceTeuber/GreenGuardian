@@ -38,7 +38,6 @@ class IceGolem extends BossMonster {
     String bossName = "Eisgolem",
     double xpAmount = 10,
     required super.health,
-    required super.maxHealth,
     double xOffsetFactor = 0.025,
     double yOffsetFactor = 0.35,
     double scalingFactor = 1,
@@ -58,7 +57,8 @@ class IceGolem extends BossMonster {
       pixelHeight: pixelHeight,
       bossName: "$bossName LV. $level",
       level: level,
-      xpAmount: xpAmount + level * 5
+      xpAmount: xpAmount + level * 5,
+      maxHealth: (100 + 25 * level).toDouble()
   );
 
   @override

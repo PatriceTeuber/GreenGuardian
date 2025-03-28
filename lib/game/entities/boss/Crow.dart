@@ -37,7 +37,6 @@ class Crow extends BossMonster {
     String bossName = "Crow",
     double xpAmount = 7,
     required super.health,
-    required super.maxHealth,
     double xOffsetFactor = 0.16,
     double yOffsetFactor = 0.35,
     double scalingFactor = 2.25,
@@ -56,7 +55,8 @@ class Crow extends BossMonster {
       pixelHeight: pixelHeight,
       bossName: "$bossName LV. $level",
       level: level,
-      xpAmount: xpAmount + level * 5
+      xpAmount: xpAmount + level * 5,
+      maxHealth: (100 + 5 * level).toDouble()
   );
 
   @override

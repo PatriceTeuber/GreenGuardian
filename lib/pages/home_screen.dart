@@ -199,6 +199,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // Spielstand vom Backend abrufen
       gameService.getGameData(userId: authProvider.userId).then((gameData) {
         final gameStateData = GameData.fromJson(gameData);
+        print(gameStateData);
         gameStateProvider.setGameData(gameStateData);
       }).catchError((error) {
         print("Fehler beim Abrufen der Speildaten: $error");

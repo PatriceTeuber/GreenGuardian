@@ -11,6 +11,8 @@ class GameData {
   final int currency;
   final double playerXP;
   final double bossHealth;
+  final String bossName;
+  final int bossLevel;
   final List<Item> items;
 
   GameData({
@@ -19,6 +21,8 @@ class GameData {
     required this.currency,
     required this.playerXP,
     required this.bossHealth,
+    required this.bossName,
+    required this.bossLevel,
     required this.items,
   });
 

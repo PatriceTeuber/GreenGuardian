@@ -31,7 +31,6 @@ class FireDemon extends BossMonster {
     String bossName = "Feuerdämon",
     double xpAmount = 15,
     required super.health,
-    required super.maxHealth,
     super.xOffsetFactor = -0.3,
     super.yOffsetFactor = 0.2,
     super.scalingFactor = 1,
@@ -44,7 +43,8 @@ class FireDemon extends BossMonster {
       deathSoundSrc: "fire_death.mp3",
       attackDamage: attackDamage + level * 1.1,
       bossName: "$bossName LV. $level",
-      xpAmount: xpAmount + level * 10
+      xpAmount: xpAmount + level * 10,
+      maxHealth: (200 + 10 * level).toDouble()
   );
 
   @override

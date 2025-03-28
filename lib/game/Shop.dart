@@ -104,6 +104,7 @@ class Shop extends StatelessWidget {
                           final authProvider = Provider.of<AuthProvider>(context, listen: false);
                           GameService gameService = GameService();
                           final gameData = Provider.of<GameStateProvider>(context, listen: false).currentGameData;
+                          print(gameData);
                           gameService.addOrUpdateGameData(
                             userId: authProvider.userId,
                             gameData: gameData.toJson(),
