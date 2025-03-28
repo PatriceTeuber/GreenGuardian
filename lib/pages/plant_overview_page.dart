@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:green_guardian/services/PlantService.dart';
 import 'package:provider/provider.dart';
@@ -35,7 +34,17 @@ class PlantOverviewPage extends StatelessWidget {
       )
           : LayoutBuilder(
         builder: (context, constraints) {
-          int crossAxisCount = kIsWeb ? (constraints.maxWidth < 600 ? 1 : 4) : 1;
+          int crossAxisCount;
+          if (constraints.maxWidth < 600) {
+            // Kleine Bildschirme: 1 Karte pro Zeile
+            crossAxisCount = 1;
+          } else if (constraints.maxWidth < 1200) {
+            // Mittlere Bildschirme: 2 Karten pro Zeile
+            crossAxisCount = 2;
+          } else {
+            // Große Bildschirme: 4 Karten pro Zeile
+            crossAxisCount = 4;
+          }
           return GridView.builder(
             padding: const EdgeInsets.all(8.0),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -51,13 +60,17 @@ class PlantOverviewPage extends StatelessWidget {
                 plant: plant,
                 onWater: () {
                   plantProvider.waterPlant(plant);
-                  plantService.updateAllPlants(userId: authProvider.userId, plants: plantProvider.plants);
+                  plantService.updateAllPlants(
+                    userId: authProvider.userId,
+                    plants: plantProvider.plants,
+                  );
                 },
               );
             },
           );
         },
-      ),
+      )
+
     );
   }
 }
