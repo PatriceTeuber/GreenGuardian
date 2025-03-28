@@ -154,7 +154,9 @@ class DashboardPageState extends State<DashboardPage> {
                             trailing: IconButton(
                               icon: const Icon(Icons.opacity, color: Colors.blueAccent),
                               onPressed: () {
-                                plantProvider.waterPlant(plant);
+                                if (plantProvider.waterPlant(plant)) {
+                                  gameState.updateCurrency(gameState.currency + 35);
+                                }
                                 plantService.updateAllPlants(userId: authProvider.userId, plants: plantProvider.plants);
                               },
                             ),

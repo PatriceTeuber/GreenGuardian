@@ -16,13 +16,18 @@ class PlantProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  void waterPlant(Plant plant) {
-    // Aktualisiere lastWatered
-    plant.lastWatered = DateTime.now();
-    // Berechne nextWateringDate neu
-    plant.nextWateringDate = plant.getNextWateringDayDate(plant.plantInfo);
-    // Informiere alle Zuhörer, dass sich der Zustand geändert hat
-    print(plant.toString());
-    notifyListeners();
+  bool waterPlant(Plant plant) {
+    if (plant.lastWatered.day != DateTime.now().day) {
+      // Aktualisiere lastWatered
+      plant.lastWatered = DateTime.now();
+      // Berechne nextWateringDate neu
+      plant.nextWateringDate = plant.getNextWateringDayDate(plant.plantInfo);
+      // Informiere alle Zuhörer, dass sich der Zustand geändert hat
+      print(plant.toString());
+      notifyListeners();
+      return true;
+    } else {
+      return false;
+    }
   }
 }
