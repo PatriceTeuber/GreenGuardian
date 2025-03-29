@@ -268,7 +268,7 @@ class PlantGame extends FlameGame {
       const double topMargin = 50.0; // Abstand vom oberen Rand
       const double leftMargin = 20.0; // Abstand vom linken Rand
 
-      // Setze die Position der Player-Healthbar
+      // Positioniere die Player-Healthbar
       playerHealthBar.position = Vector2(leftMargin, topMargin);
 
       // Berechne die Position der Boss-Healthbar rechts neben der Player-Healthbar
@@ -277,19 +277,22 @@ class PlantGame extends FlameGame {
         topMargin,
       );
 
-      currentBoss.scale = Vector2.all(1.5);
-      currentBoss.position = Vector2(size.x / 3, size.y / 2);
-
-    } else {
-      if (isLandscape) {
+      // Je nach Breite des Bildschirms unterschiedliche Skalierungswerte setzen
+      if (size.x < 600) {
+        // Kleiner Bildschirm
         currentBoss.scale = Vector2.all(1.5);
-        currentBoss.position = Vector2(size.x / 3, size.y / 6);
-        bossHealthBar.position = Vector2(currentBoss.labelXOffset, currentBoss.labelYOffset);
+        currentBoss.position = Vector2(size.x / 4, size.y / 2);
+      } else if (size.x >= 600 && size.x < 1200) {
+        // Mittlere Bildschirmgröße
+        currentBoss.scale = Vector2.all(2);
+        currentBoss.position = Vector2(size.x / 3, size.y / 2);
       } else {
-        currentBoss.scale = bossBlueprint.scale;
-        currentBoss.position = bossBlueprint.position;
+        // Großer Bildschirm
+        currentBoss.scale = Vector2.all(3);
+        currentBoss.position = Vector2(size.x / 2.5, size.y / 2);
       }
     }
+
   }
 
 
