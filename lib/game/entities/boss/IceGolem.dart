@@ -21,7 +21,7 @@ class IceGolem extends BossMonster {
     deathSoundSrc: "golem_death.mp3",
     attackDamage: attackDamage + level * 1.25,
     health: health + 25 * level,
-    maxHealth: health,
+    maxHealth: (100 + 25 * level).toDouble(),
     xOffsetFactor: xOffsetFactor,
     yOffsetFactor: yOffsetFactor,
     scalingFactor: scalingFactor,

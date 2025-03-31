@@ -20,7 +20,7 @@ class Crow extends BossMonster {
       deathSoundSrc: "crow_death.wav",
       attackDamage: attackDamage + level * 1.5,
       health: health + 5 * level,
-      maxHealth: health,
+      maxHealth: (100 + 5 * level).toDouble(),
       xOffsetFactor: xOffsetFactor,
       yOffsetFactor: yOffsetFactor,
       scalingFactor: scalingFactor,

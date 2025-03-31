@@ -20,7 +20,7 @@ class FireDemon extends BossMonster {
       deathSoundSrc: "fire_death.mp3",
       attackDamage: attackDamage + level * 1.1,
       health: health + 10 * level,
-      maxHealth: health,
+      maxHealth: (200 + 10 * level).toDouble(),
       bossName: "$bossName LV. $level",
       xpAmount: xpAmount + level * 10
   );

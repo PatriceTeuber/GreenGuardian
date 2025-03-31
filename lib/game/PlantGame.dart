@@ -60,18 +60,12 @@ class PlantGame extends FlameGame {
     final gameState = Provider.of<GameStateProvider>(gameContext, listen: false);
 
     //Stand laden
-    print("=====================================");
-    print("=====================================");
-    print("=====================================");
     inventory.addAll(gameState.items);
     getSavedBoss(gameState.bossLevel, gameState.bossHealth, gameState.bossName);
     currency = gameState.currency;
     playerXP = gameState.playerXP;
     playerHealth = gameState.playerHealth;
     maxPlayerHealth = gameState.maxPlayerHealth;
-    print("=====================================");
-    print("=====================================");
-    print("=====================================");
 
     //Hintergrund
     await add(BattleBackground());
