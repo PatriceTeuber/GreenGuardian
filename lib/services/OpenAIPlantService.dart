@@ -1,59 +1,25 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import '../models/PlantInfo.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import '../models/PlantInfo.dart';
 
 class OpenAIPlantService {
-  late final String apiKey;
-  final String apiUrl = 'https://api.openai.com/v1/chat/completions'; // Chat-Endpunkt
-
-  OpenAIPlantService() {
-    apiKey = dotenv.env['OPENAI_API_KEY']!;
-  }
+  // Beispielendpunkt deiner Lambda-Funktion, z.B. über API Gateway
+  final String lambdaEndpoint = 'https://674ykbftq6.execute-api.us-east-1.amazonaws.com/1/plant/getInfo';
 
   Future<PlantInfo> getPlantInfo(String plantName) async {
-    final prompt = '''
-      Bitte liefere mir Informationen über die Pflanze "$plantName" in folgendem Format auf deutsch:
-      {
-        "name": "...",
-        "type": "...",
-        "wateringDays": ["...", "..."],
-        "location": "..."
-      }
-      Nur das Format befüllen und keine anderen Infos oder Redewendungen. Bitte Format ohne ```json davor und ohne ``` am Ende.
-      ''';
-
     final response = await http.post(
-      Uri.parse(apiUrl),
+      Uri.parse(lambdaEndpoint),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $apiKey',
       },
-      // Beachte hier die Nutzung des Feldes "messages" statt "prompt"
-      body: jsonEncode({
-        'model': 'gpt-4o', // Nutze hier ein gültiges Modell, z.B. 'gpt-4' oder 'gpt-3.5-turbo'
-        'messages': [
-          {"role": "user", "content": prompt}
-        ],
-        'max_tokens': 150,
-        'temperature': 0.7,
-      }),
+      body: jsonEncode({"plantName": plantName}),
     );
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      // Bei Chat Completions steht die Antwort im "content" der ersten Nachricht
-      final resultText = data['choices'][0]['message']['content'];
-
-      try {
-        final Map<String, dynamic> resultJson = jsonDecode(resultText);
-        return PlantInfo.fromJson(resultJson);
-      } catch (e) {
-        throw Exception('Fehler beim Parsen der API-Antwort: $e');
-      }
+      return PlantInfo.fromJson(data);
     } else {
-      print('Response body: ${response.body}');
-      throw Exception('Fehlerhafte Antwort der API: ${response.statusCode}');
+      throw Exception('Fehlerhafte Antwort: ${response.statusCode}');
     }
   }
 }
