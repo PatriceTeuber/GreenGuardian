@@ -38,7 +38,6 @@ dependencies:
   flame: ^1.25.0
   flame_audio: ^2.11.0
   flip_card: ^0.7.0
-  flutter_dotenv: ^5.0.2
   http: ^1.0.0
   http_parser: ^4.1.2
   json_annotation: ^4.9.0

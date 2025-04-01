@@ -8,7 +8,6 @@ import 'package:green_guardian/services/auth_provider.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-  await dotenv.load(fileName: ".env");
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (_) => PlantProvider()),
