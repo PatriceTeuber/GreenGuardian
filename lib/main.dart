@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:green_guardian/pages/login.dart';
 import 'package:green_guardian/services/GameLifecycleHandler.dart';
 import 'package:green_guardian/services/GameStateProvider.dart';
